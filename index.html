@@ -145,12 +145,6 @@
         return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
       });
     }
-    function eventsAt(pid, day, slot) {
-      return listAt(pid, day, slot).slice().sort(function (a, b) {
-        return String(a.start || "").localeCompare(String(b.start || ""));
-      });
-    }
-
     function chip(pid, day, slot, ev, idx) {
       const el = document.createElement("div");
       el.className = "chip" + (isUnc(pid, day, slot, idx) ? " uncertain" : "");
