@@ -90,7 +90,7 @@
     }
     .chip .maps .pin { width: 14px; height: 14px; flex: 0 0 auto; }
     .chip .maps .map-label {
-      color: #c62828; font-weight: 800; font-style: italic; font-size: 0.75rem;
+      color: #6b7280; font-weight: 800; font-style: italic; font-size: 0.75rem;
     }
     .chip .maps:hover .map-label { text-decoration: underline; }
     .empty { color: var(--muted); font-size: 0.8rem; }
@@ -244,7 +244,7 @@
       const pin = '<svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path fill="#EA4335" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle fill="#fff" cx="12" cy="9.2" r="2.6"/></svg>';
       const mapHtml = map
         ? '<a class="maps" href="' + esc(map.href) + '" target="_blank" rel="noopener noreferrer" aria-label="Vị trí Map">' +
-          pin + '<span class="map-label">(Vị Trí Map)</span></a>'
+          pin + '<span class="map-label">(Vị Trí)</span></a>'
         : "";
       el.innerHTML = who +
         '<div class="tm">' + esc(ev.start || "—") + " → " + esc(ev.end || "—") + "</div>" +
