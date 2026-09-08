@@ -84,6 +84,12 @@
     .chip.uncertain { background: #ffe566; border-color: #e6c200; }
     .chip .who { font-weight: 700; font-size: 0.72rem; margin-bottom: 2px; }
     .chip .tm { color: var(--muted); font-size: 0.75rem; }
+    .chip .maps {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-top: 6px; font-size: 0.72rem; font-weight: 650;
+      color: var(--green); text-decoration: none;
+    }
+    .chip .maps:hover { text-decoration: underline; }
     .empty { color: var(--muted); font-size: 0.8rem; }
     @media (max-width: 860px) {
       body { padding: 16px 12px 40px; }
@@ -122,6 +128,7 @@
       weekStart: startOfWeek(new Date()),
       people: [],
       events: {},
+      places: {},
       uncertain: []
     };
 
@@ -178,7 +185,15 @@
       const a = Math.max(toMin(ev.start), toMin(r[0]));
       const b = Math.min(toMin(ev.end), toMin(r[1]));
       if (b <= a) return null;
-      return { start: fromMin(a), end: fromMin(b), title: ev.title };
+      return {
+        start: fromMin(a),
+        end: fromMin(b),
+        title: ev.title,
+        place: ev.place,
+        query: ev.query,
+        maps: ev.maps,
+        placeLabel: ev.placeLabel
+      };
     }
     function isUnc(pid, day, idx) {
       return state.uncertain.indexOf(pid + "|" + day + "|" + idx) >= 0;
@@ -188,6 +203,21 @@
         return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
       });
     }
+    function mapsInfo(ev) {
+      const places = state.places || {};
+      const ref = ev.place;
+      let query = ev.query || ev.maps;
+      let label = ev.placeLabel;
+      if (ref && places[ref]) {
+        query = query || places[ref].query || places[ref].maps;
+        label = label || places[ref].label;
+      }
+      if (!query) return null;
+      const href = /^https?:\/\//i.test(query)
+        ? query
+        : "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
+      return { href: href, label: label || "Bản đồ" };
+    }
     function chip(pid, day, ev, idx) {
       const el = document.createElement("div");
       el.className = "chip" + (isUnc(pid, day, idx) ? " uncertain" : "");
@@ -195,9 +225,14 @@
       const who = (state.person === "chung" && p)
         ? '<div class="who" style="color:' + esc(p.color) + '">' + esc(p.name) + "</div>"
         : "";
+      const map = mapsInfo(ev);
+      const mapHtml = map
+        ? '<a class="maps" href="' + esc(map.href) + '" target="_blank" rel="noopener noreferrer">' +
+          "📍 " + esc(map.label) + "</a>"
+        : "";
       el.innerHTML = who +
         '<div class="tm">' + esc(ev.start || "—") + " → " + esc(ev.end || "—") + "</div>" +
-        "<div>" + esc(ev.title || "") + "</div>";
+        "<div>" + esc(ev.title || "") + "</div>" + mapHtml;
       return el;
     }
     function fillSlot(host, day, slotId) {
@@ -294,6 +329,7 @@
       const doc = await res.json();
       state.people = doc.people || [];
       state.events = doc.events || {};
+      state.places = doc.places || {};
       state.uncertain = doc.uncertain || [];
       const n = Date.now();
       const t = new Date(n);

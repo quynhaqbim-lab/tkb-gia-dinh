@@ -5,6 +5,12 @@
     { "id": "thoc", "name": "Thóc", "color": "#1f5c45" },
     { "id": "su", "name": "Su", "color": "#d97706" }
   ],
+  "places": {
+    "dhqg": {
+      "label": "ĐHQG",
+      "query": "Đại học Quốc gia Hà Nội"
+    }
+  },
   "events": {
     "thoc": {
       "t2": [
@@ -57,7 +63,7 @@
         { "start": "18:00", "end": "21:00", "title": "Văn" }
       ],
       "cn": [
-        { "start": "08:00", "end": "11:00", "title": "Toán (ĐHQG)" },
+        { "start": "08:00", "end": "11:00", "title": "Toán (ĐHQG)", "place": "dhqg" },
         { "start": "14:00", "end": "17:00", "title": "Toán (Thầy Long)" },
         { "start": "17:15", "end": "18:15", "title": "Đàn" }
       ]
