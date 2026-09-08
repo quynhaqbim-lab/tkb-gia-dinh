@@ -28,8 +28,17 @@
     html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--ui); }
     body { padding: 28px 22px 56px; }
     .wrap { max-width: 1280px; margin: 0 auto; }
-    .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 12px 16px; margin-bottom: 10px; flex-wrap: wrap; }
     h1 { font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.35rem); margin: 0; letter-spacing: -0.02em; }
+    .top-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .btn-reload {
+      background: var(--green); color: #fff; border: 0; cursor: pointer;
+      font: inherit; font-weight: 700; font-size: 1.02rem;
+      padding: 12px 22px; border-radius: 999px;
+      box-shadow: 0 8px 18px rgba(31, 92, 69, 0.3);
+    }
+    .btn-reload:hover { background: #164736; }
+    .btn-reload:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
     .badge-src { background: #e8edf2; color: var(--muted); font-size: 0.78rem; padding: 6px 12px; border-radius: 999px; }
     .today-line { margin: 6px 0 0; font-size: 0.92rem; }
     .hint { margin: 6px 0 18px; color: var(--muted); font-size: 0.9rem; }
@@ -38,7 +47,7 @@
     .pill .dot { width: 9px; height: 9px; border-radius: 50%; }
     .pill.on { background: var(--green); color: #fff; border-color: var(--green); }
     .pill.on .dot { background: #fff !important; }
-    .pill:focus-visible, .ghost:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+    .pill:focus-visible, .ghost:focus-visible, .btn-reload:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
     .board {
       background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
       overflow: auto;
@@ -82,11 +91,12 @@
     .ghost { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-weight: 650; cursor: pointer; font: inherit; }
     @media (max-width: 860px) {
       body { padding: 16px 12px 40px; }
-      .top { flex-direction: column; align-items: flex-start; }
+      .top { align-items: center; }
+      .btn-reload { font-size: 0.95rem; padding: 11px 18px; }
     }
     @media print {
       body { background: #fff; padding: 0; }
-      .pills, .actions, .hint, .badge-src { display: none !important; }
+      .pills, .actions, .hint, .badge-src, .btn-reload { display: none !important; }
     }
   </style>
 </head>
@@ -94,14 +104,16 @@
   <div class="wrap">
     <div class="top">
       <h1>Thời Khóa Biểu Gia Đình</h1>
-      <div class="badge-src" id="src">Đang tải GitHub…</div>
+      <div class="top-actions">
+        <button class="btn-reload" type="button" id="btn-reload">Làm mới</button>
+        <div class="badge-src" id="src">Đang tải GitHub…</div>
+      </div>
     </div>
     <p class="today-line" id="today-line"></p>
     <p class="hint">Lịch lặp mỗi tuần. Trên điện thoại vuốt ngang để xem Thứ 2–CN.</p>
     <div class="pills" id="pills"></div>
     <div class="board"><table class="grid" id="grid"></table></div>
     <div class="actions">
-      <button class="ghost" type="button" id="btn-reload">Làm mới</button>
       <button class="ghost" type="button" id="btn-share">Sao chép link</button>
     </div>
     <p class="foot">Sáng trước 12h · Chiều 12h–18h · Tối từ 18h. Ô vàng = chữ giấy chưa xác nhận.</p>
