@@ -304,10 +304,9 @@
     }
 
     document.getElementById("btn-reload").addEventListener("click", () => {
-      document.getElementById("src").textContent = "Đang tải…";
-      load().catch(() => {
-        document.getElementById("src").textContent = "Lỗi tải data.json";
-      });
+      const u = new URL(location.href);
+      u.searchParams.set("v", String(Date.now()));
+      location.replace(u.toString());
     });
 
     load().catch(() => {
