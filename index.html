@@ -59,7 +59,23 @@
       display: flex; justify-content: space-between; align-items: center;
       gap: 12px; margin-bottom: 14px; box-shadow: var(--shadow);
     }
-    .person-bar h2 { margin: 0; font-size: 1.15rem; }
+    .person-bar[hidden] { display: none !important; }
+    .days { display: none; }
+    .day-card {
+      background: #fff; border-radius: 18px; box-shadow: var(--shadow); overflow: hidden;
+    }
+    .day-h { padding: 12px 14px; display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; }
+    .day-h .sub { color: var(--muted); font-weight: 500; font-size: 0.82rem; }
+    .day-card.today { box-shadow: 0 0 0 2px var(--green), var(--shadow); }
+    .day-card.today .day-h { background: var(--green-soft); color: var(--green); }
+    .day-card.weekend .day-h { background: var(--weekend); color: var(--weekend-ink); }
+    .slot-h {
+      font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #fff; padding: 6px 14px;
+    }
+    .slot-h.sang { background: var(--sang); }
+    .slot-h.chieu { background: var(--chieu); }
+    .slot-b { padding: 10px 12px 12px; }
     .colors { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .swatch {
       width: 22px; height: 22px; border-radius: 50%;
@@ -146,6 +162,15 @@
       background: #fff; border: 1px solid var(--line); border-radius: 999px;
       padding: 8px 14px; font-weight: 650; cursor: pointer; font: inherit;
     }
+    @media (max-width: 860px) {
+      body { padding: 16px 12px 40px; }
+      .top { flex-direction: column; align-items: flex-start; }
+      .hint { font-size: 0.84rem; }
+      .board { display: none; }
+      .days { display: grid; gap: 12px; }
+      .evt-top { flex-wrap: wrap; }
+      .evt-top input[type="time"] { width: auto; min-width: 5.8rem; flex: 1; font-size: 1rem; }
+    }
     @media print {
       body { background: #fff; padding: 0; }
       .pills, .person-bar, .actions, .hint, .saved, .add-evt, .x, .del, .colors { display: none !important; }
@@ -166,6 +191,7 @@
       <div class="colors" id="colors"></div>
     </div>
     <div class="board"><table class="grid" id="grid"></table></div>
+    <div class="days" id="days"></div>
     <div class="actions">
       <button class="ghost" type="button" id="btn-today">Về tuần này</button>
       <button class="ghost" type="button" id="btn-export">Tải data.json</button>
@@ -372,6 +398,30 @@
       return box;
     }
 
+    function fillSlot(host, day, slotId) {
+      if (state.person === "chung") {
+        state.people.forEach((p) => {
+          listAt(p.id, day, slotId).forEach((ev, idx) => {
+            host.appendChild(eventCard(p.id, day, slotId, ev, idx, false));
+          });
+        });
+        return;
+      }
+      listAt(state.person, day, slotId).forEach((ev, idx) => {
+        host.appendChild(eventCard(state.person, day, slotId, ev, idx, true));
+      });
+      const add = document.createElement("button");
+      add.className = "add-evt";
+      add.type = "button";
+      add.textContent = "+ Thêm";
+      add.addEventListener("click", () => {
+        ensureList(state.person, day, slotId).push({ start: "", end: "", title: "" });
+        persistLocal();
+        render();
+      });
+      host.appendChild(add);
+    }
+
     function renderGrid() {
       const dates = weekDates();
       const table = document.getElementById("grid");
@@ -400,33 +450,37 @@
         dates.forEach((d, i) => {
           const td = document.createElement("td");
           td.className = "cell" + (isToday(d) ? " today" : "") + (isWeekend(i) ? " weekend" : "");
-          const day = KEYS[i];
-          if (state.person === "chung") {
-            state.people.forEach((p) => {
-              listAt(p.id, day, slot.id).forEach((ev, idx) => {
-                td.appendChild(eventCard(p.id, day, slot.id, ev, idx, false));
-              });
-            });
-          } else {
-            listAt(state.person, day, slot.id).forEach((ev, idx) => {
-              td.appendChild(eventCard(state.person, day, slot.id, ev, idx, true));
-            });
-            const add = document.createElement("button");
-            add.className = "add-evt";
-            add.type = "button";
-            add.textContent = "+ Thêm";
-            add.addEventListener("click", () => {
-              ensureList(state.person, day, slot.id).push({ start: "", end: "", title: "" });
-              persistLocal();
-              render();
-            });
-            td.appendChild(add);
-          }
+          fillSlot(td, KEYS[i], slot.id);
           tr.appendChild(td);
         });
         tb.appendChild(tr);
       });
       table.appendChild(tb);
+    }
+
+    function renderDays() {
+      const box = document.getElementById("days");
+      box.innerHTML = "";
+      weekDates().forEach((d, i) => {
+        const card = document.createElement("article");
+        card.className = "day-card" + (isToday(d) ? " today" : "") + (isWeekend(i) ? " weekend" : "");
+        const h = document.createElement("div");
+        h.className = "day-h";
+        h.innerHTML = "<span>" + DAYS[i] + (isToday(d) ? ' <span class="badge">HÔM NAY</span>' : "") +
+          '</span><span class="sub">' + fmtVN(d) + "</span>";
+        card.appendChild(h);
+        SLOTS.forEach((slot) => {
+          const sh = document.createElement("div");
+          sh.className = "slot-h " + slot.id;
+          sh.textContent = slot.label;
+          const sb = document.createElement("div");
+          sb.className = "slot-b";
+          fillSlot(sb, KEYS[i], slot.id);
+          card.appendChild(sh);
+          card.appendChild(sb);
+        });
+        box.appendChild(card);
+      });
     }
 
     function render() {
@@ -437,6 +491,7 @@
       renderPills();
       renderPersonBar();
       renderGrid();
+      renderDays();
     }
 
     function addChild() {
@@ -463,6 +518,10 @@
     document.getElementById("btn-today").addEventListener("click", () => {
       state.weekStart = startOfWeek(new Date());
       render();
+      const today = document.querySelector(".day-card.today");
+      if (today && window.matchMedia("(max-width: 860px)").matches) {
+        today.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     });
     document.getElementById("btn-export").addEventListener("click", () => {
       const blob = new Blob([JSON.stringify(payload(), null, 2)], { type: "application/json" });
