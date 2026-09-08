@@ -182,15 +182,10 @@
       chieu: ["12:00", "18:00"],
       toi: ["18:00", "24:00"]
     };
-    function clipToSlot(ev, slotId) {
-      const r = SLOT_RANGE[slotId];
-      if (!r || !ev.start || !ev.end) return null;
-      const a = Math.max(toMin(ev.start), toMin(r[0]));
-      const b = Math.min(toMin(ev.end), toMin(r[1]));
-      if (b <= a) return null;
+    function eventView(ev, start, end) {
       return {
-        start: fromMin(a),
-        end: fromMin(b),
+        start: start,
+        end: end,
         title: ev.title,
         place: ev.place,
         query: ev.query,
@@ -199,6 +194,16 @@
         lat: ev.lat,
         lng: ev.lng
       };
+    }
+    function clipToSlot(ev, slotId) {
+      if (!ev.start || !ev.end) return null;
+      if (ev.slot) return ev.slot === slotId ? eventView(ev, ev.start, ev.end) : null;
+      const r = SLOT_RANGE[slotId];
+      if (!r) return null;
+      const a = Math.max(toMin(ev.start), toMin(r[0]));
+      const b = Math.min(toMin(ev.end), toMin(r[1]));
+      if (b <= a) return null;
+      return eventView(ev, fromMin(a), fromMin(b));
     }
     function isUnc(pid, day, idx) {
       return state.uncertain.indexOf(pid + "|" + day + "|" + idx) >= 0;
