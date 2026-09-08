@@ -11,14 +11,12 @@
       --ink: #15202b;
       --muted: #66788a;
       --line: #e4e9ee;
-      --card: #ffffff;
       --green: #1f5c45;
       --green-soft: #e7f3ec;
       --weekend: #fdecee;
       --weekend-ink: #c2414a;
       --sang: #9a541c;
       --chieu: #1a6b7c;
-      --dash: #c5d0d8;
       --shadow: 0 8px 28px rgba(21, 32, 43, 0.06);
       --radius: 22px;
       --ui: "Segoe UI", "Be Vietnam Pro", system-ui, sans-serif;
@@ -28,152 +26,57 @@
     html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--ui); }
     body { padding: 28px 22px 56px; }
     .wrap { max-width: 1280px; margin: 0 auto; }
-    .top {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      gap: 12px; margin-bottom: 10px;
-    }
-    h1 {
-      font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.35rem);
-      margin: 0; letter-spacing: -0.02em; font-weight: 700;
-    }
-    .saved {
-      background: #e8edf2; color: var(--muted); font-size: 0.78rem;
-      padding: 6px 12px; border-radius: 999px; white-space: nowrap;
-    }
+    .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    h1 { font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.35rem); margin: 0; letter-spacing: -0.02em; }
+    .badge-src { background: #e8edf2; color: var(--muted); font-size: 0.78rem; padding: 6px 12px; border-radius: 999px; }
     .today-line { margin: 6px 0 0; font-size: 0.92rem; }
     .hint { margin: 6px 0 18px; color: var(--muted); font-size: 0.9rem; }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-    .pill, .icon-x, .add-evt, .swatch, .btn-text {
-      font: inherit; cursor: pointer; border: 0; background: none;
-    }
-    .pill {
-      background: #fff; border: 1px solid var(--line);
-      padding: 8px 16px; border-radius: 999px; font-weight: 650; color: var(--ink);
-      display: inline-flex; align-items: center; gap: 8px;
-    }
+    .pill { font: inherit; cursor: pointer; border: 1px solid var(--line); background: #fff; padding: 8px 16px; border-radius: 999px; font-weight: 650; display: inline-flex; align-items: center; gap: 8px; }
     .pill .dot { width: 9px; height: 9px; border-radius: 50%; }
     .pill.on { background: var(--green); color: #fff; border-color: var(--green); }
-    .pill.add { color: var(--muted); border-style: dashed; }
-    .person-bar {
-      background: #fff; border-radius: 18px; padding: 14px 18px;
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 12px; margin-bottom: 14px; box-shadow: var(--shadow);
-    }
-    .person-bar[hidden] { display: none !important; }
+    .board { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: auto; }
+    table.grid { border-collapse: separate; border-spacing: 0; min-width: 980px; width: 100%; }
+    .grid th, .grid td { vertical-align: top; }
+    .grid thead th { padding: 14px 10px 12px; font-weight: 650; border-bottom: 1px solid var(--line); background: #fafbfc; }
+    .grid thead th .sub { display: block; color: var(--muted); font-size: 0.75rem; font-weight: 500; margin-top: 2px; }
+    .grid thead th.today { background: var(--green-soft); color: var(--green); }
+    .grid thead th.weekend { background: var(--weekend); color: var(--weekend-ink); }
+    .now { display: inline-block; margin-left: 6px; font-size: 0.62rem; background: var(--green); color: #fff; border-radius: 999px; padding: 2px 7px; }
+    .lab { width: 54px; color: #fff; font-weight: 700; font-size: 0.88rem; text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 0.08em; }
+    td.lab-sang { background: var(--sang); }
+    td.lab-chieu { background: var(--chieu); }
+    td.cell { border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px; min-width: 132px; }
+    tr.sang td.cell.today, tr.chieu td.cell.today { background: #f3faf6; }
+    tr.sang td.cell.weekend, tr.chieu td.cell.weekend { background: #fff7f7; }
+    .chip { border-radius: 12px; padding: 8px 10px; margin-bottom: 8px; border: 1px solid var(--line); background: #fff; font-size: 0.84rem; }
+    .chip.uncertain { background: #ffe566; border-color: #e6c200; }
+    .chip .who { font-weight: 700; font-size: 0.72rem; margin-bottom: 2px; }
+    .chip .tm { color: var(--muted); font-size: 0.75rem; }
+    .empty { color: var(--muted); font-size: 0.8rem; }
     .days { display: none; }
-    .day-card {
-      background: #fff; border-radius: 18px; box-shadow: var(--shadow); overflow: hidden;
-    }
-    .day-h { padding: 12px 14px; display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; }
+    .day-card { background: #fff; border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
+    .day-h { padding: 12px 14px; display: flex; justify-content: space-between; font-weight: 700; }
     .day-h .sub { color: var(--muted); font-weight: 500; font-size: 0.82rem; }
     .day-card.today { box-shadow: 0 0 0 2px var(--green), var(--shadow); }
     .day-card.today .day-h { background: var(--green-soft); color: var(--green); }
     .day-card.weekend .day-h { background: var(--weekend); color: var(--weekend-ink); }
-    .slot-h {
-      font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;
-      text-transform: uppercase; color: #fff; padding: 6px 14px;
-    }
+    .slot-h { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; padding: 6px 14px; }
     .slot-h.sang { background: var(--sang); }
     .slot-h.chieu { background: var(--chieu); }
     .slot-b { padding: 10px 12px 12px; }
-    .colors { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .swatch {
-      width: 22px; height: 22px; border-radius: 50%;
-      box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px #ddd;
-    }
-    .swatch.on { box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px currentColor; }
-    .del {
-      color: #b42318; background: #fde8e8; border-radius: 999px;
-      padding: 6px 12px; font-size: 0.82rem; font-weight: 650;
-    }
-    .board {
-      background: #fff; border-radius: var(--radius);
-      box-shadow: var(--shadow); overflow: auto;
-    }
-    table.grid {
-      border-collapse: separate; border-spacing: 0;
-      min-width: 980px; width: 100%;
-    }
-    .grid th, .grid td { vertical-align: top; }
-    .grid thead th {
-      padding: 14px 10px 12px; font-weight: 650; font-size: 0.92rem;
-      border-bottom: 1px solid var(--line); background: #fafbfc;
-    }
-    .grid thead th .sub { display: block; color: var(--muted); font-size: 0.75rem; font-weight: 500; margin-top: 2px; }
-    .grid thead th.today { background: var(--green-soft); color: var(--green); }
-    .grid thead th.weekend { background: var(--weekend); color: var(--weekend-ink); }
-    .badge {
-      display: inline-block; margin-left: 6px; font-size: 0.62rem;
-      background: var(--green); color: #fff; border-radius: 999px;
-      padding: 2px 7px; letter-spacing: 0.04em; vertical-align: middle;
-    }
-    .lab {
-      width: 54px; color: #fff; font-weight: 700; font-size: 0.88rem;
-      text-align: center; writing-mode: vertical-rl; transform: rotate(180deg);
-      letter-spacing: 0.08em;
-    }
-    td.lab-sang { background: var(--sang); }
-    td.lab-chieu { background: var(--chieu); }
-    td.cell {
-      border-left: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      padding: 10px; min-width: 132px; background: #fff;
-    }
-    tr.sang td.cell.today { background: #f3faf6; }
-    tr.chieu td.cell.today { background: #f3faf6; }
-    tr.sang td.cell.weekend, tr.chieu td.cell.weekend { background: #fff7f7; }
-    .evt {
-      background: #fff; border: 1px solid var(--line); border-radius: 12px;
-      padding: 8px 8px 8px 10px; margin-bottom: 8px;
-    }
-    .evt.uncertain { background: #ffe566; border-color: #e6c200; }
-    .evt-top {
-      display: flex; align-items: center; gap: 4px; margin-bottom: 6px;
-    }
-    .evt-top input[type="time"] {
-      border: 0; background: transparent; font: 0.78rem/1 var(--ui);
-      color: var(--muted); width: 6.6rem; padding: 0;
-    }
-    .arrow { color: var(--muted); font-size: 0.78rem; }
-    .x {
-      margin-left: auto; width: 22px; height: 22px; border-radius: 50%;
-      border: 1px solid var(--line); background: #fff; color: #7a8794;
-      cursor: pointer; font-size: 0.85rem; line-height: 1;
-    }
-    .title {
-      width: 100%; border: 1px solid var(--line); border-radius: 8px;
-      padding: 7px 8px; font: 0.88rem/1.3 var(--ui);
-    }
-    .add-evt {
-      width: 100%; border: 1px dashed var(--dash); border-radius: 12px;
-      padding: 10px; color: var(--muted); font-size: 0.85rem;
-    }
-    .add-evt:hover { background: #f7fafc; }
-    .chip {
-      border-radius: 12px; padding: 8px 10px; margin-bottom: 8px;
-      border: 1px solid var(--line); background: #fff; font-size: 0.84rem;
-    }
-    .chip.uncertain { background: #ffe566; }
-    .chip .who { font-weight: 700; font-size: 0.72rem; margin-bottom: 2px; }
-    .chip .tm { color: var(--muted); font-size: 0.75rem; }
     .foot { margin-top: 16px; color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
     .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-    .ghost {
-      background: #fff; border: 1px solid var(--line); border-radius: 999px;
-      padding: 8px 14px; font-weight: 650; cursor: pointer; font: inherit;
-    }
+    .ghost { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-weight: 650; cursor: pointer; font: inherit; }
     @media (max-width: 860px) {
       body { padding: 16px 12px 40px; }
       .top { flex-direction: column; align-items: flex-start; }
-      .hint { font-size: 0.84rem; }
       .board { display: none; }
       .days { display: grid; gap: 12px; }
-      .evt-top { flex-wrap: wrap; }
-      .evt-top input[type="time"] { width: auto; min-width: 5.8rem; flex: 1; font-size: 1rem; }
     }
     @media print {
       body { background: #fff; padding: 0; }
-      .pills, .person-bar, .actions, .hint, .saved, .add-evt, .x, .del, .colors { display: none !important; }
+      .pills, .actions, .hint, .badge-src { display: none !important; }
     }
   </style>
 </head>
@@ -181,48 +84,34 @@
   <div class="wrap">
     <div class="top">
       <h1>Thời Khóa Biểu Gia Đình</h1>
-      <div class="saved" id="saved">Chưa lưu</div>
+      <div class="badge-src" id="src">Đang tải GitHub…</div>
     </div>
     <p class="today-line" id="today-line"></p>
-    <p class="hint">Chạm vào một ô để nhập giờ và môn học. Nháp lưu trên máy này; cả nhà thấy bản đã <code>git push</code>.</p>
+    <p class="hint">Chỉ xem. Đổi lịch thì sửa <code>data.json</code> rồi push GitHub.</p>
     <div class="pills" id="pills"></div>
-    <div class="person-bar" id="person-bar" hidden>
-      <h2 id="person-name"></h2>
-      <div class="colors" id="colors"></div>
-    </div>
     <div class="board"><table class="grid" id="grid"></table></div>
     <div class="days" id="days"></div>
     <div class="actions">
       <button class="ghost" type="button" id="btn-today">Về tuần này</button>
-      <button class="ghost" type="button" id="btn-export">Tải data.json</button>
       <button class="ghost" type="button" id="btn-share">Sao chép link</button>
-      <button class="ghost" type="button" id="btn-reset">Lấy bản GitHub</button>
     </div>
-    <p class="foot">Ô vàng = chữ giấy chưa xác nhận. Sáng nâu / Chiều xanh. Thứ 7 và Chủ nhật nền hồng.</p>
+    <p class="foot">Ô vàng = chữ giấy chưa xác nhận.</p>
   </div>
   <script>
-    const SLOTS = [
-      { id: "sang", label: "Sáng" },
-      { id: "chieu", label: "Chiều" }
-    ];
+    const SLOTS = [{ id: "sang", label: "Sáng" }, { id: "chieu", label: "Chiều" }];
     const DAYS = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
     const KEYS = ["t2", "t3", "t4", "t5", "t6", "t7", "cn"];
-    const PALETTE = ["#1f5c45", "#d97706", "#6d28d9", "#1e3a5f", "#9f1239", "#4d7c0f"];
-    const STORE = "tkb-gia-dinh-v3";
-
     const state = {
       person: "chung",
       weekStart: startOfWeek(new Date()),
       people: [],
       events: {},
-      uncertain: [],
-      savedAt: null
+      uncertain: []
     };
 
     function startOfWeek(d) {
       const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      const day = (x.getDay() + 6) % 7;
-      x.setDate(x.getDate() - day);
+      x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
       return x;
     }
     function iso(d) {
@@ -230,13 +119,6 @@
     }
     function fmtVN(d) {
       return d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
-    }
-    function fmtSaved(d) {
-      const hh = String(d.getHours()).padStart(2, "0");
-      const mm = String(d.getMinutes()).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      const mon = String(d.getMonth() + 1).padStart(2, "0");
-      return "Đã lưu · " + hh + ":" + mm + ", " + day + "-" + mon;
     }
     function weekDates() {
       return KEYS.map((_, i) => {
@@ -249,70 +131,48 @@
     function isWeekend(i) { return i >= 5; }
     function personById(id) { return state.people.find((p) => p.id === id); }
     function listAt(pid, day, slot) {
-      const root = state.events[pid] || {};
-      const dayBag = root[day] || {};
-      return dayBag[slot] || [];
-    }
-    function ensureList(pid, day, slot) {
-      if (!state.events[pid]) state.events[pid] = {};
-      if (!state.events[pid][day]) state.events[pid][day] = {};
-      if (!state.events[pid][day][slot]) state.events[pid][day][slot] = [];
-      return state.events[pid][day][slot];
-    }
-    function uncKey(pid, day, slot, idx) {
-      return pid + "|" + day + "|" + slot + "|" + idx;
+      return (((state.events[pid] || {})[day] || {})[slot]) || [];
     }
     function isUnc(pid, day, slot, idx) {
-      return state.uncertain.indexOf(uncKey(pid, day, slot, idx)) >= 0;
+      return state.uncertain.indexOf(pid + "|" + day + "|" + slot + "|" + idx) >= 0;
     }
-    function payload() {
-      return {
-        v: 3,
-        people: state.people,
-        events: state.events,
-        uncertain: state.uncertain
-      };
+
+    function chip(pid, day, slot, ev, idx) {
+      const el = document.createElement("div");
+      el.className = "chip" + (isUnc(pid, day, slot, idx) ? " uncertain" : "");
+      const p = personById(pid);
+      const who = (state.person === "chung" && p)
+        ? '<div class="who" style="color:' + p.color + '">' + p.name + "</div>"
+        : "";
+      el.innerHTML = who +
+        '<div class="tm">' + (ev.start || "—") + " → " + (ev.end || "—") + "</div>" +
+        "<div>" + (ev.title || "") + "</div>";
+      return el;
     }
-    function persistLocal() {
-      state.savedAt = new Date();
-      try { localStorage.setItem(STORE, JSON.stringify(payload())); } catch (e) {}
-      document.getElementById("saved").textContent = fmtSaved(state.savedAt);
-    }
-    function applyDoc(doc) {
-      if (!doc) return;
-      if (Array.isArray(doc.people)) state.people = doc.people;
-      if (doc.events) state.events = doc.events;
-      if (Array.isArray(doc.uncertain)) state.uncertain = doc.uncertain;
-    }
-    async function load() {
-      let published = null;
-      try {
-        const res = await fetch("data.json", { cache: "no-store" });
-        if (res.ok) published = await res.json();
-      } catch (e) {}
-      applyDoc(published);
-      try {
-        const raw = localStorage.getItem(STORE);
-        if (raw) applyDoc(JSON.parse(raw));
-      } catch (e) {}
-      if (!state.people.length) {
-        state.people = [
-          { id: "thoc", name: "Thóc", color: PALETTE[0] },
-          { id: "su", name: "Su", color: PALETTE[1] }
-        ];
+    function fillSlot(host, day, slotId) {
+      let n = 0;
+      const ids = state.person === "chung" ? state.people.map((p) => p.id) : [state.person];
+      ids.forEach((pid) => {
+        listAt(pid, day, slotId).forEach((ev, idx) => {
+          host.appendChild(chip(pid, day, slotId, ev, idx));
+          n++;
+        });
+      });
+      if (!n) {
+        const e = document.createElement("div");
+        e.className = "empty";
+        e.textContent = "—";
+        host.appendChild(e);
       }
-      persistLocal();
-      render();
     }
 
     function renderPills() {
       const box = document.getElementById("pills");
       box.innerHTML = "";
-      const all = [{ id: "chung", name: "Lịch chung", color: "#1f5c45" }].concat(state.people);
-      all.forEach((p) => {
+      [{ id: "chung", name: "Lịch chung", color: "#1f5c45" }].concat(state.people).forEach((p) => {
         const b = document.createElement("button");
-        b.className = "pill" + (state.person === p.id ? " on" : "");
         b.type = "button";
+        b.className = "pill" + (state.person === p.id ? " on" : "");
         const dot = document.createElement("span");
         dot.className = "dot";
         dot.style.background = p.color;
@@ -321,105 +181,6 @@
         b.addEventListener("click", () => { state.person = p.id; render(); });
         box.appendChild(b);
       });
-      const add = document.createElement("button");
-      add.className = "pill add";
-      add.type = "button";
-      add.textContent = "+ Thêm bé";
-      add.addEventListener("click", addChild);
-      box.appendChild(add);
-    }
-
-    function renderPersonBar() {
-      const bar = document.getElementById("person-bar");
-      const p = personById(state.person);
-      if (!p) { bar.hidden = true; return; }
-      bar.hidden = false;
-      document.getElementById("person-name").textContent = p.name;
-      const colors = document.getElementById("colors");
-      colors.innerHTML = "";
-      PALETTE.forEach((c) => {
-        const s = document.createElement("button");
-        s.className = "swatch" + (p.color === c ? " on" : "");
-        s.type = "button";
-        s.style.background = c;
-        s.style.color = c;
-        s.addEventListener("click", () => { p.color = c; persistLocal(); render(); });
-        colors.appendChild(s);
-      });
-      const del = document.createElement("button");
-      del.className = "del";
-      del.type = "button";
-      del.textContent = "Xóa bé này";
-      del.addEventListener("click", () => removeChild(p.id));
-      colors.appendChild(del);
-    }
-
-    function eventCard(pid, day, slot, ev, idx, editable) {
-      if (!editable) {
-        const chip = document.createElement("div");
-        chip.className = "chip" + (isUnc(pid, day, slot, idx) ? " uncertain" : "");
-        const p = personById(pid);
-        chip.innerHTML =
-          '<div class="who" style="color:' + (p ? p.color : "#333") + '">' + (p ? p.name : pid) + "</div>" +
-          '<div class="tm">' + (ev.start || "—") + " → " + (ev.end || "—") + "</div>" +
-          "<div>" + (ev.title || "") + "</div>";
-        return chip;
-      }
-      const box = document.createElement("div");
-      box.className = "evt" + (isUnc(pid, day, slot, idx) ? " uncertain" : "");
-      const top = document.createElement("div");
-      top.className = "evt-top";
-      const a = document.createElement("input");
-      a.type = "time"; a.value = ev.start || "";
-      const b = document.createElement("input");
-      b.type = "time"; b.value = ev.end || "";
-      a.addEventListener("change", () => { ev.start = a.value; persistLocal(); });
-      b.addEventListener("change", () => { ev.end = b.value; persistLocal(); });
-      const x = document.createElement("button");
-      x.className = "x"; x.type = "button"; x.textContent = "×";
-      x.addEventListener("click", () => {
-        const list = listAt(pid, day, slot);
-        list.splice(idx, 1);
-        persistLocal();
-        render();
-      });
-      top.appendChild(a);
-      const ar = document.createElement("span"); ar.className = "arrow"; ar.textContent = "→";
-      top.appendChild(ar);
-      top.appendChild(b);
-      top.appendChild(x);
-      const title = document.createElement("input");
-      title.className = "title";
-      title.value = ev.title || "";
-      title.placeholder = "Môn học";
-      title.addEventListener("input", () => { ev.title = title.value; persistLocal(); });
-      box.appendChild(top);
-      box.appendChild(title);
-      return box;
-    }
-
-    function fillSlot(host, day, slotId) {
-      if (state.person === "chung") {
-        state.people.forEach((p) => {
-          listAt(p.id, day, slotId).forEach((ev, idx) => {
-            host.appendChild(eventCard(p.id, day, slotId, ev, idx, false));
-          });
-        });
-        return;
-      }
-      listAt(state.person, day, slotId).forEach((ev, idx) => {
-        host.appendChild(eventCard(state.person, day, slotId, ev, idx, true));
-      });
-      const add = document.createElement("button");
-      add.className = "add-evt";
-      add.type = "button";
-      add.textContent = "+ Thêm";
-      add.addEventListener("click", () => {
-        ensureList(state.person, day, slotId).push({ start: "", end: "", title: "" });
-        persistLocal();
-        render();
-      });
-      host.appendChild(add);
     }
 
     function renderGrid() {
@@ -431,9 +192,8 @@
       hr.appendChild(document.createElement("th"));
       dates.forEach((d, i) => {
         const th = document.createElement("th");
-        if (isToday(d)) th.className = "today";
-        else if (isWeekend(i)) th.className = "weekend";
-        th.innerHTML = DAYS[i] + (isToday(d) ? '<span class="badge">HÔM NAY</span>' : "") +
+        th.className = isToday(d) ? "today" : (isWeekend(i) ? "weekend" : "");
+        th.innerHTML = DAYS[i] + (isToday(d) ? '<span class="now">HÔM NAY</span>' : "") +
           '<span class="sub">' + fmtVN(d) + "</span>";
         hr.appendChild(th);
       });
@@ -466,7 +226,7 @@
         card.className = "day-card" + (isToday(d) ? " today" : "") + (isWeekend(i) ? " weekend" : "");
         const h = document.createElement("div");
         h.className = "day-h";
-        h.innerHTML = "<span>" + DAYS[i] + (isToday(d) ? ' <span class="badge">HÔM NAY</span>' : "") +
+        h.innerHTML = "<span>" + DAYS[i] + (isToday(d) ? ' <span class="now">HÔM NAY</span>' : "") +
           '</span><span class="sub">' + fmtVN(d) + "</span>";
         card.appendChild(h);
         SLOTS.forEach((slot) => {
@@ -487,63 +247,38 @@
       const now = new Date();
       document.getElementById("today-line").innerHTML =
         "<strong>Hôm nay:</strong> " + DAYS[(now.getDay() + 6) % 7] + ", " + fmtVN(now);
-      if (state.savedAt) document.getElementById("saved").textContent = fmtSaved(state.savedAt);
       renderPills();
-      renderPersonBar();
       renderGrid();
       renderDays();
     }
 
-    function addChild() {
-      const name = prompt("Tên bé?");
-      if (!name || !name.trim()) return;
-      const id = "p" + Date.now();
-      const used = state.people.map((p) => p.color);
-      const color = PALETTE.find((c) => used.indexOf(c) < 0) || PALETTE[0];
-      state.people.push({ id: id, name: name.trim(), color: color });
-      state.events[id] = {};
-      state.person = id;
-      persistLocal();
-      render();
-    }
-    function removeChild(id) {
-      if (!confirm("Xóa bé này khỏi lịch trên máy?")) return;
-      state.people = state.people.filter((p) => p.id !== id);
-      delete state.events[id];
-      state.person = "chung";
-      persistLocal();
+    async function load() {
+      try { localStorage.removeItem("tkb-gia-dinh-v3"); } catch (e) {}
+      const res = await fetch("data.json", { cache: "no-store" });
+      if (!res.ok) throw new Error(res.status);
+      const doc = await res.json();
+      state.people = doc.people || [];
+      state.events = doc.events || {};
+      state.uncertain = doc.uncertain || [];
+      document.getElementById("src").textContent = "Từ GitHub";
       render();
     }
 
     document.getElementById("btn-today").addEventListener("click", () => {
       state.weekStart = startOfWeek(new Date());
       render();
-      const today = document.querySelector(".day-card.today");
-      if (today && window.matchMedia("(max-width: 860px)").matches) {
-        today.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
-    document.getElementById("btn-export").addEventListener("click", () => {
-      const blob = new Blob([JSON.stringify(payload(), null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "data.json";
-      a.click();
-      URL.revokeObjectURL(a.href);
+      const el = document.querySelector(".day-card.today");
+      if (el && matchMedia("(max-width: 860px)").matches) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     document.getElementById("btn-share").addEventListener("click", async () => {
       const url = location.origin + location.pathname.replace(/index\.html$/, "");
-      try { await navigator.clipboard.writeText(url); document.getElementById("saved").textContent = "Đã copy link"; }
+      try { await navigator.clipboard.writeText(url); document.getElementById("src").textContent = "Đã copy link"; }
       catch (e) { prompt("Link:", url); }
     });
-    document.getElementById("btn-reset").addEventListener("click", async () => {
-      try { localStorage.removeItem(STORE); } catch (e) {}
-      state.events = {};
-      state.people = [];
-      await load();
-    });
 
-    load();
+    load().catch(() => {
+      document.getElementById("src").textContent = "Lỗi tải data.json";
+    });
   </script>
 </body>
 </html>
