@@ -40,14 +40,13 @@
     .btn-reload:hover { background: #164736; }
     .btn-reload:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
     .badge-src { background: #e8edf2; color: var(--muted); font-size: 0.78rem; padding: 6px 12px; border-radius: 999px; }
-    .today-line { margin: 6px 0 0; font-size: 0.92rem; }
-    .hint { margin: 6px 0 18px; color: var(--muted); font-size: 0.9rem; }
+    .today-line { margin: 6px 0 14px; font-size: 0.92rem; }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
     .pill { font: inherit; cursor: pointer; border: 1px solid var(--line); background: #fff; padding: 8px 16px; border-radius: 999px; font-weight: 650; display: inline-flex; align-items: center; gap: 8px; }
     .pill .dot { width: 9px; height: 9px; border-radius: 50%; }
     .pill.on { background: var(--green); color: #fff; border-color: var(--green); }
     .pill.on .dot { background: #fff !important; }
-    .pill:focus-visible, .ghost:focus-visible, .btn-reload:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+    .pill:focus-visible, .btn-reload:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
     .board {
       background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
       overflow: auto;
@@ -86,9 +85,6 @@
     .chip .who { font-weight: 700; font-size: 0.72rem; margin-bottom: 2px; }
     .chip .tm { color: var(--muted); font-size: 0.75rem; }
     .empty { color: var(--muted); font-size: 0.8rem; }
-    .foot { margin-top: 16px; color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-    .ghost { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-weight: 650; cursor: pointer; font: inherit; }
     @media (max-width: 860px) {
       body { padding: 16px 12px 40px; }
       .top { align-items: center; }
@@ -96,7 +92,7 @@
     }
     @media print {
       body { background: #fff; padding: 0; }
-      .pills, .actions, .hint, .badge-src, .btn-reload { display: none !important; }
+      .pills, .badge-src, .btn-reload { display: none !important; }
     }
   </style>
 </head>
@@ -110,13 +106,8 @@
       </div>
     </div>
     <p class="today-line" id="today-line"></p>
-    <p class="hint">Lịch lặp mỗi tuần. Trên điện thoại vuốt ngang để xem Thứ 2–CN.</p>
     <div class="pills" id="pills"></div>
     <div class="board"><table class="grid" id="grid"></table></div>
-    <div class="actions">
-      <button class="ghost" type="button" id="btn-share">Sao chép link</button>
-    </div>
-    <p class="foot">Giờ thật được cắt: Sáng đến 12h · Chiều 12–18h · Tối từ 18h. Ví dụ 07:45–17:10 hiện ở cả Sáng và Chiều. Ô vàng = chưa xác nhận.</p>
   </div>
   <script>
     const SLOTS = [
@@ -317,11 +308,6 @@
       load().catch(() => {
         document.getElementById("src").textContent = "Lỗi tải data.json";
       });
-    });
-    document.getElementById("btn-share").addEventListener("click", async () => {
-      const url = location.origin + location.pathname.replace(/index\.html$/, "");
-      try { await navigator.clipboard.writeText(url); document.getElementById("src").textContent = "Đã copy link"; }
-      catch (e) { prompt("Link:", url); }
     });
 
     load().catch(() => {
