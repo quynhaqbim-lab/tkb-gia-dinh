@@ -85,11 +85,14 @@
     .chip .who { font-weight: 700; font-size: 0.72rem; margin-bottom: 2px; }
     .chip .tm { color: var(--muted); font-size: 0.75rem; }
     .chip .maps {
-      display: inline-flex; align-items: center; gap: 4px;
-      margin-top: 6px; font-size: 0.72rem; font-weight: 650;
-      color: var(--green); text-decoration: none;
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 6px; text-decoration: none;
     }
-    .chip .maps:hover { text-decoration: underline; }
+    .chip .maps .pin { width: 14px; height: 14px; flex: 0 0 auto; }
+    .chip .maps .map-label {
+      color: #c62828; font-weight: 800; font-style: italic; font-size: 0.75rem;
+    }
+    .chip .maps:hover .map-label { text-decoration: underline; }
     .empty { color: var(--muted); font-size: 0.8rem; }
     @media (max-width: 860px) {
       body { padding: 16px 12px 40px; }
@@ -238,9 +241,10 @@
         ? '<div class="who" style="color:' + esc(p.color) + '">' + esc(p.name) + "</div>"
         : "";
       const map = mapsInfo(ev);
+      const pin = '<svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path fill="#EA4335" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle fill="#fff" cx="12" cy="9.2" r="2.6"/></svg>';
       const mapHtml = map
-        ? '<a class="maps" href="' + esc(map.href) + '" target="_blank" rel="noopener noreferrer">' +
-          "📍 " + esc(map.label) + "</a>"
+        ? '<a class="maps" href="' + esc(map.href) + '" target="_blank" rel="noopener noreferrer" aria-label="Vị trí Map">' +
+          pin + '<span class="map-label">(Vị Trí Map)</span></a>'
         : "";
       el.innerHTML = who +
         '<div class="tm">' + esc(ev.start || "—") + " → " + esc(ev.end || "—") + "</div>" +
