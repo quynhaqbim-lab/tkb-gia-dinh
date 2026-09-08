@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#f3f5f7" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <title>Thời Khóa Biểu Gia Đình</title>
   <style>
     :root {
@@ -87,11 +88,12 @@
       <div class="badge-src" id="src">Đang tải GitHub…</div>
     </div>
     <p class="today-line" id="today-line"></p>
-    <p class="hint">Chỉ xem. Đổi lịch thì sửa <code>data.json</code> rồi push GitHub.</p>
+    <p class="hint">Chỉ xem. Đổi lịch thì sửa <code>data.json</code> rồi push GitHub, sau đó bấm <strong>Làm mới</strong> (tránh cache trình duyệt).</p>
     <div class="pills" id="pills"></div>
     <div class="board"><table class="grid" id="grid"></table></div>
     <div class="days" id="days"></div>
     <div class="actions">
+      <button class="ghost" type="button" id="btn-reload">Làm mới</button>
       <button class="ghost" type="button" id="btn-today">Về tuần này</button>
       <button class="ghost" type="button" id="btn-share">Sao chép link</button>
     </div>
@@ -253,17 +255,31 @@
     }
 
     async function load() {
-      try { localStorage.removeItem("tkb-gia-dinh-v3"); } catch (e) {}
-      const res = await fetch("data.json", { cache: "no-store" });
+      try {
+        Object.keys(localStorage).forEach((k) => {
+          if (k.indexOf("tkb-gia-dinh") === 0) localStorage.removeItem(k);
+        });
+      } catch (e) {}
+      const res = await fetch("data.json?ts=" + Date.now(), { cache: "no-store" });
       if (!res.ok) throw new Error(res.status);
       const doc = await res.json();
       state.people = doc.people || [];
       state.events = doc.events || {};
       state.uncertain = doc.uncertain || [];
-      document.getElementById("src").textContent = "Từ GitHub";
+      const n = Date.now();
+      const t = new Date(n);
+      const hh = String(t.getHours()).padStart(2, "0");
+      const mm = String(t.getMinutes()).padStart(2, "0");
+      document.getElementById("src").textContent = "GitHub · " + hh + ":" + mm;
       render();
     }
 
+    document.getElementById("btn-reload").addEventListener("click", () => {
+      document.getElementById("src").textContent = "Đang tải…";
+      load().catch(() => {
+        document.getElementById("src").textContent = "Lỗi tải data.json";
+      });
+    });
     document.getElementById("btn-today").addEventListener("click", () => {
       state.weekStart = startOfWeek(new Date());
       render();
