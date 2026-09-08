@@ -28,9 +28,9 @@
     html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--ui); }
     body { padding: 28px 22px 56px; }
     .wrap { max-width: 1280px; margin: 0 auto; }
-    .top { display: flex; justify-content: space-between; align-items: center; gap: 12px 16px; margin-bottom: 10px; flex-wrap: wrap; }
+    .top { display: flex; justify-content: flex-start; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
     h1 { font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.35rem); margin: 0; letter-spacing: -0.02em; }
-    .top-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .top-actions { display: flex; flex-direction: row; align-items: center; gap: 10px; }
     .btn-reload {
       background: var(--green); color: #fff; border: 0; cursor: pointer;
       font: inherit; font-weight: 700; font-size: 1.02rem;
@@ -116,7 +116,7 @@
     <div class="actions">
       <button class="ghost" type="button" id="btn-share">Sao chép link</button>
     </div>
-    <p class="foot">Sáng trước 12h · Chiều 12h–18h · Tối từ 18h. Ô vàng = chữ giấy chưa xác nhận.</p>
+    <p class="foot">Giờ thật được cắt: Sáng đến 12h · Chiều 12–18h · Tối từ 18h. Ví dụ 07:45–17:10 hiện ở cả Sáng và Chiều. Ô vàng = chưa xác nhận.</p>
   </div>
   <script>
     const SLOTS = [
@@ -155,20 +155,51 @@
     function isToday(d) { return iso(d) === iso(new Date()); }
     function isWeekend(i) { return i >= 5; }
     function personById(id) { return state.people.find((p) => p.id === id); }
-    function listAt(pid, day, slot) {
-      return (((state.events[pid] || {})[day] || {})[slot]) || [];
+    function dayEvents(pid, day) {
+      const bag = (state.events[pid] || {})[day];
+      if (Array.isArray(bag)) return bag;
+      if (!bag || typeof bag !== "object") return [];
+      const out = [];
+      ["sang", "chieu", "toi"].forEach(function (slot) {
+        (bag[slot] || []).forEach(function (ev) { out.push(ev); });
+      });
+      return out;
     }
-    function isUnc(pid, day, slot, idx) {
-      return state.uncertain.indexOf(pid + "|" + day + "|" + slot + "|" + idx) >= 0;
+    function toMin(t) {
+      if (t === "24:00") return 24 * 60;
+      const p = String(t || "00:00").split(":");
+      return (Number(p[0]) || 0) * 60 + (Number(p[1]) || 0);
+    }
+    function fromMin(n) {
+      if (n >= 24 * 60) return "24:00";
+      const h = Math.floor(n / 60);
+      const m = n % 60;
+      return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+    }
+    const SLOT_RANGE = {
+      sang: ["00:00", "12:00"],
+      chieu: ["12:00", "18:00"],
+      toi: ["18:00", "24:00"]
+    };
+    function clipToSlot(ev, slotId) {
+      const r = SLOT_RANGE[slotId];
+      if (!r || !ev.start || !ev.end) return null;
+      const a = Math.max(toMin(ev.start), toMin(r[0]));
+      const b = Math.min(toMin(ev.end), toMin(r[1]));
+      if (b <= a) return null;
+      return { start: fromMin(a), end: fromMin(b), title: ev.title };
+    }
+    function isUnc(pid, day, idx) {
+      return state.uncertain.indexOf(pid + "|" + day + "|" + idx) >= 0;
     }
     function esc(s) {
       return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
         return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
       });
     }
-    function chip(pid, day, slot, ev, idx) {
+    function chip(pid, day, ev, idx) {
       const el = document.createElement("div");
-      el.className = "chip" + (isUnc(pid, day, slot, idx) ? " uncertain" : "");
+      el.className = "chip" + (isUnc(pid, day, idx) ? " uncertain" : "");
       const p = personById(pid);
       const who = (state.person === "chung" && p)
         ? '<div class="who" style="color:' + esc(p.color) + '">' + esc(p.name) + "</div>"
@@ -182,15 +213,12 @@
       let n = 0;
       const ids = state.person === "chung" ? state.people.map((p) => p.id) : [state.person];
       ids.forEach((pid) => {
-        const raw = listAt(pid, day, slotId);
-        raw.map(function (ev, orig) { return { ev: ev, orig: orig }; })
-          .sort(function (a, b) {
-            return String(a.ev.start || "").localeCompare(String(b.ev.start || ""));
-          })
-          .forEach(function (item) {
-            host.appendChild(chip(pid, day, slotId, item.ev, item.orig));
-            n++;
-          });
+        dayEvents(pid, day).forEach(function (ev, orig) {
+          const clipped = clipToSlot(ev, slotId);
+          if (!clipped) return;
+          host.appendChild(chip(pid, day, clipped, orig));
+          n++;
+        });
       });
       if (!n) {
         const e = document.createElement("div");

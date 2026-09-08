@@ -1,72 +1,71 @@
 {
-  "v": 4,
+  "v": 5,
+  "note": "Mỗi mục là khoảng giờ thật. Giao diện cắt Sáng <12h, Chiều 12–18h, Tối ≥18h.",
   "people": [
     { "id": "thoc", "name": "Thóc", "color": "#1f5c45" },
     { "id": "su", "name": "Su", "color": "#d97706" }
   ],
   "events": {
     "thoc": {
-      "t2": {
-        "sang": [{ "start": "07:45", "end": "17:10", "title": "Ở trường" }],
-        "toi": [{ "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }]
-      },
-      "t3": {
-        "sang": [{ "start": "07:45", "end": "17:10", "title": "Ở trường" }]
-      },
-      "t4": {
-        "sang": [{ "start": "07:45", "end": "17:10", "title": "Ở trường" }],
-        "toi": [{ "start": "19:30", "end": "20:30", "title": "Đàn" }]
-      },
-      "t5": {
-        "sang": [{ "start": "07:40", "end": "17:10", "title": "Ở trường" }],
-        "toi": [{ "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }]
-      },
-      "t6": {
-        "sang": [{ "start": "07:40", "end": "17:10", "title": "Ở trường" }]
-      },
-      "t7": {
-        "sang": [{ "start": "08:00", "end": "10:30", "title": "Nhà cô CN" }]
-      },
-      "cn": {
-        "chieu": [{ "start": "15:00", "end": "18:15", "title": "Vẽ + Đàn" }]
-      }
+      "t2": [
+        { "start": "07:45", "end": "17:10", "title": "Ở trường" },
+        { "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }
+      ],
+      "t3": [
+        { "start": "07:45", "end": "17:10", "title": "Ở trường" }
+      ],
+      "t4": [
+        { "start": "07:45", "end": "17:10", "title": "Ở trường" },
+        { "start": "19:30", "end": "20:30", "title": "Đàn" }
+      ],
+      "t5": [
+        { "start": "07:40", "end": "17:10", "title": "Ở trường" },
+        { "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }
+      ],
+      "t6": [
+        { "start": "07:40", "end": "17:10", "title": "Ở trường" }
+      ],
+      "t7": [
+        { "start": "08:00", "end": "10:30", "title": "Nhà cô CN" }
+      ],
+      "cn": [
+        { "start": "15:00", "end": "18:15", "title": "Vẽ + Đàn" }
+      ]
     },
     "su": {
-      "t2": {
-        "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }],
-        "toi": [{ "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }]
-      },
-      "t3": {
-        "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }],
-        "toi": [{ "start": "18:00", "end": "21:00", "title": "Tiếng Anh" }]
-      },
-      "t4": {
-        "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }],
-        "toi": [{ "start": "19:30", "end": "20:30", "title": "Đàn" }]
-      },
-      "t5": {
-        "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }]
-      },
-      "t6": {
-        "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }],
-        "toi": [{ "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }]
-      },
-      "t7": {
-        "sang": [{ "start": "07:15", "end": "11:45", "title": "Ở trường" }],
-        "toi": [{ "start": "18:00", "end": "21:00", "title": "Văn" }]
-      },
-      "cn": {
-        "sang": [{ "start": "08:00", "end": "11:00", "title": "Toán (ĐHQG)" }],
-        "chieu": [
-          { "start": "14:00", "end": "17:00", "title": "Toán (Thầy Long)" },
-          { "start": "17:15", "end": "18:15", "title": "Đàn" }
-        ]
-      }
+      "t2": [
+        { "start": "13:30", "end": "17:40", "title": "Ở trường" },
+        { "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }
+      ],
+      "t3": [
+        { "start": "13:30", "end": "17:40", "title": "Ở trường" },
+        { "start": "18:00", "end": "21:00", "title": "Tiếng Anh" }
+      ],
+      "t4": [
+        { "start": "13:30", "end": "17:40", "title": "Ở trường" },
+        { "start": "19:30", "end": "20:30", "title": "Đàn" }
+      ],
+      "t5": [
+        { "start": "13:30", "end": "17:40", "title": "Ở trường" }
+      ],
+      "t6": [
+        { "start": "13:30", "end": "17:40", "title": "Ở trường" },
+        { "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }
+      ],
+      "t7": [
+        { "start": "07:15", "end": "11:45", "title": "Ở trường" },
+        { "start": "18:00", "end": "21:00", "title": "Văn" }
+      ],
+      "cn": [
+        { "start": "08:00", "end": "11:00", "title": "Toán (ĐHQG)" },
+        { "start": "14:00", "end": "17:00", "title": "Toán (Thầy Long)" },
+        { "start": "17:15", "end": "18:15", "title": "Đàn" }
+      ]
     }
   },
   "uncertain": [
-    "thoc|t2|sang|0",
-    "thoc|t7|sang|0",
-    "su|t6|chieu|0"
+    "thoc|t2|0",
+    "thoc|t7|0",
+    "su|t6|0"
   ]
 }
