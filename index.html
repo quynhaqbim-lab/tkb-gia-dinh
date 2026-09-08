@@ -36,9 +36,11 @@
     .pill { font: inherit; cursor: pointer; border: 1px solid var(--line); background: #fff; padding: 8px 16px; border-radius: 999px; font-weight: 650; display: inline-flex; align-items: center; gap: 8px; }
     .pill .dot { width: 9px; height: 9px; border-radius: 50%; }
     .pill.on { background: var(--green); color: #fff; border-color: var(--green); }
+    .pill.on .dot { background: #fff !important; }
+    .pill:focus-visible, .ghost:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
     .board {
       background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
-      overflow-x: auto; overflow-y: hidden;
+      overflow: auto;
       -webkit-overflow-scrolling: touch;
     }
     .board::-webkit-scrollbar { height: 10px; }
@@ -49,11 +51,15 @@
     .grid thead th .sub { display: block; color: var(--muted); font-size: 0.75rem; font-weight: 500; margin-top: 2px; }
     .grid thead th.today { background: var(--green-soft); color: var(--green); }
     .grid thead th.weekend { background: var(--weekend); color: var(--weekend-ink); }
+    .grid thead th.today.weekend { background: var(--green-soft); color: var(--green); }
     .now { display: inline-block; margin-left: 6px; font-size: 0.62rem; background: var(--green); color: #fff; border-radius: 999px; padding: 2px 7px; }
     .lab {
       width: 54px; color: #fff; font-weight: 700; font-size: 0.88rem;
-      text-align: center; writing-mode: vertical-rl; transform: rotate(180deg);
-      letter-spacing: 0.08em; position: sticky; left: 0; z-index: 2;
+      text-align: center; letter-spacing: 0.08em;
+      position: sticky; left: 0; z-index: 2;
+    }
+    .lab span {
+      writing-mode: vertical-rl; transform: rotate(180deg); display: inline-block;
     }
     .grid thead th:first-child { position: sticky; left: 0; z-index: 3; background: #fafbfc; }
     td.lab-sang { background: var(--sang); }
@@ -86,12 +92,11 @@
       <div class="badge-src" id="src">Đang tải GitHub…</div>
     </div>
     <p class="today-line" id="today-line"></p>
-    <p class="hint">Chỉ xem. Đổi lịch thì sửa <code>data.json</code> rồi push GitHub, sau đó bấm <strong>Làm mới</strong> (tránh cache trình duyệt).</p>
+    <p class="hint">Lịch lặp mỗi tuần. Trên điện thoại vuốt ngang để xem Thứ 2–CN.</p>
     <div class="pills" id="pills"></div>
     <div class="board"><table class="grid" id="grid"></table></div>
     <div class="actions">
       <button class="ghost" type="button" id="btn-reload">Làm mới</button>
-      <button class="ghost" type="button" id="btn-today">Về tuần này</button>
       <button class="ghost" type="button" id="btn-share">Sao chép link</button>
     </div>
     <p class="foot">Ô vàng = chữ giấy chưa xác nhận.</p>
@@ -135,27 +140,42 @@
     function isUnc(pid, day, slot, idx) {
       return state.uncertain.indexOf(pid + "|" + day + "|" + slot + "|" + idx) >= 0;
     }
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+        return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+      });
+    }
+    function eventsAt(pid, day, slot) {
+      return listAt(pid, day, slot).slice().sort(function (a, b) {
+        return String(a.start || "").localeCompare(String(b.start || ""));
+      });
+    }
 
     function chip(pid, day, slot, ev, idx) {
       const el = document.createElement("div");
       el.className = "chip" + (isUnc(pid, day, slot, idx) ? " uncertain" : "");
       const p = personById(pid);
       const who = (state.person === "chung" && p)
-        ? '<div class="who" style="color:' + p.color + '">' + p.name + "</div>"
+        ? '<div class="who" style="color:' + esc(p.color) + '">' + esc(p.name) + "</div>"
         : "";
       el.innerHTML = who +
-        '<div class="tm">' + (ev.start || "—") + " → " + (ev.end || "—") + "</div>" +
-        "<div>" + (ev.title || "") + "</div>";
+        '<div class="tm">' + esc(ev.start || "—") + " → " + esc(ev.end || "—") + "</div>" +
+        "<div>" + esc(ev.title || "") + "</div>";
       return el;
     }
     function fillSlot(host, day, slotId) {
       let n = 0;
       const ids = state.person === "chung" ? state.people.map((p) => p.id) : [state.person];
       ids.forEach((pid) => {
-        listAt(pid, day, slotId).forEach((ev, idx) => {
-          host.appendChild(chip(pid, day, slotId, ev, idx));
-          n++;
-        });
+        const raw = listAt(pid, day, slotId);
+        raw.map(function (ev, orig) { return { ev: ev, orig: orig }; })
+          .sort(function (a, b) {
+            return String(a.ev.start || "").localeCompare(String(b.ev.start || ""));
+          })
+          .forEach(function (item) {
+            host.appendChild(chip(pid, day, slotId, item.ev, item.orig));
+            n++;
+          });
       });
       if (!n) {
         const e = document.createElement("div");
@@ -172,6 +192,7 @@
         const b = document.createElement("button");
         b.type = "button";
         b.className = "pill" + (state.person === p.id ? " on" : "");
+        b.setAttribute("aria-pressed", state.person === p.id ? "true" : "false");
         const dot = document.createElement("span");
         dot.className = "dot";
         dot.style.background = p.color;
@@ -191,7 +212,10 @@
       hr.appendChild(document.createElement("th"));
       dates.forEach((d, i) => {
         const th = document.createElement("th");
-        th.className = isToday(d) ? "today" : (isWeekend(i) ? "weekend" : "");
+        const cls = [];
+        if (isToday(d)) cls.push("today");
+        if (isWeekend(i)) cls.push("weekend");
+        th.className = cls.join(" ");
         th.innerHTML = DAYS[i] + (isToday(d) ? '<span class="now">HÔM NAY</span>' : "") +
           '<span class="sub">' + fmtVN(d) + "</span>";
         hr.appendChild(th);
@@ -204,7 +228,7 @@
         tr.className = slot.id;
         const lab = document.createElement("td");
         lab.className = "lab lab-" + slot.id;
-        lab.textContent = slot.label;
+        lab.innerHTML = "<span>" + slot.label + "</span>";
         tr.appendChild(lab);
         dates.forEach((d, i) => {
           const td = document.createElement("td");
@@ -250,10 +274,6 @@
       load().catch(() => {
         document.getElementById("src").textContent = "Lỗi tải data.json";
       });
-    });
-    document.getElementById("btn-today").addEventListener("click", () => {
-      state.weekStart = startOfWeek(new Date());
-      render();
     });
     document.getElementById("btn-share").addEventListener("click", async () => {
       const url = location.origin + location.pathname.replace(/index\.html$/, "");
