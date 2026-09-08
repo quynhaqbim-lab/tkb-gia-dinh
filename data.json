@@ -1,8 +1,34 @@
 {
-  "v": 1,
+  "v": 2,
+  "note": "Lịch lặp mỗi tuần. Khóa: t2|sang, t2|chieu, t2|toi … cn|toi. Nguồn: giấy Thóc / Su.",
   "data": {
-    "chung": {},
-    "tue-lam": {},
-    "tri-lam": {}
+    "thoc": {
+      "t2|sang": "7h45 → 17h10 → Ở trường",
+      "t2|toi": "18h → 19h30 → Tiếng Anh",
+      "t3|sang": "7h45 → 17h10 → Ở trường",
+      "t4|sang": "7h45 → 17h10 → Ở trường",
+      "t4|toi": "19h30 → 20h30 → Đàn",
+      "t5|sang": "7h40 → 17h10 → Ở trường",
+      "t5|toi": "18h → 19h30 → Tiếng Anh",
+      "t6|sang": "7h40 → 17h10 → Ở trường",
+      "t7|sang": "8h → 10h30 → Nhà cô CN",
+      "cn|chieu": "15h → 18h15 → Vẽ + Đàn"
+    },
+    "su": {
+      "t2|chieu": "13h30 → 17h40 → Ở trường",
+      "t2|toi": "19h → 21h → Tiếng Trung",
+      "t3|chieu": "13h30 → 17h40 → Ở trường",
+      "t3|toi": "18h → 21h → Tiếng Anh",
+      "t4|chieu": "13h30 → 17h40 → Ở trường",
+      "t4|toi": "19h30 → 20h30 → Đàn",
+      "t5|chieu": "13h30 → 17h40 → Ở trường",
+      "t6|chieu": "13h30 → 17h40 → Ở trường",
+      "t6|toi": "19h → 21h → Tiếng Trung",
+      "t7|sang": "7h15 → 11h45 → Ở trường",
+      "t7|toi": "18h → 21h → Tiếng Anh Văn",
+      "cn|sang": "8h → 11h → Toán → ĐHQG",
+      "cn|chieu": "14h → 17h → Toán → Thầy Long",
+      "cn|toi": "17h15 → 18h15 → Đàn"
+    }
   }
 }

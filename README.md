@@ -1,6 +1,6 @@
 # Thời Khóa Biểu Gia Đình
 
-Lịch tuần (Lịch chung / Tuệ Lâm / Trí Lâm) trên **GitHub Pages**. Cả nhà mở **một link**; khi đổi lịch thì sửa dữ liệu rồi đẩy lại GitHub.
+Lịch tuần (**Thóc** / **Su**, tab Lịch chung) trên **GitHub Pages**. Cả nhà mở **một link**; khi đổi lịch thì sửa dữ liệu rồi đẩy lại GitHub.
 
 **Link:** https://quynhaqbim-lab.github.io/tkb-gia-dinh/
 
@@ -21,17 +21,18 @@ git push
 
 3. Đợi ~1 phút, mở lại link (refresh mạnh nếu còn bản cũ).
 
-Khóa ô: `"YYYY-MM-DD|sang"` hoặc `"YYYY-MM-DD|chieu"`. Ví dụ:
+Lịch **lặp mỗi tuần**. Tab **Thóc** / **Su** theo giấy viết tay. Khóa ô: `t2|sang`, `t5|toi`, `cn|chieu`… Ví dụ:
 
 ```json
 {
-  "v": 1,
+  "v": 2,
   "data": {
-    "chung": {
-      "2026-09-08|sang": "Họp gia đình"
+    "thoc": {
+      "t2|sang": "7h45 → 17h10 → Ở trường"
     },
-    "tue-lam": {},
-    "tri-lam": {}
+    "su": {
+      "t2|chieu": "13h30 → 17h40 → Ở trường"
+    }
   }
 }
 ```

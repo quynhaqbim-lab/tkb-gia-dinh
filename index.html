@@ -122,6 +122,9 @@
     .cell:focus {
       outline: 2px solid var(--pine); border-style: solid;
     }
+    .cell[readonly] {
+      background: #f7f1e6; cursor: default;
+    }
     .cell.today { background: #fffdf6; }
     .status {
       margin-top: 14px; color: var(--muted); font-size: 0.88rem;
@@ -175,8 +178,8 @@
 
     <div class="tabs" role="tablist" aria-label="Thành viên">
       <button class="tab" role="tab" id="tab-chung" data-person="chung" aria-selected="true">Lịch chung</button>
-      <button class="tab" role="tab" id="tab-tue" data-person="tue-lam" aria-selected="false">Tuệ Lâm</button>
-      <button class="tab" role="tab" id="tab-tri" data-person="tri-lam" aria-selected="false">Trí Lâm</button>
+      <button class="tab" role="tab" id="tab-thoc" data-person="thoc" aria-selected="false">Thóc</button>
+      <button class="tab" role="tab" id="tab-su" data-person="su" aria-selected="false">Su</button>
     </div>
 
     <div class="weekbar">
@@ -195,16 +198,21 @@
   </div>
   <div class="toast" id="toast" role="status"></div>
   <script>
-    const PEOPLE = ["chung", "tue-lam", "tri-lam"];
+    const PEOPLE = ["chung", "thoc", "su"];
+    const MEMBER_IDS = ["thoc", "su"];
+    const LABELS = { chung: "Lịch chung", thoc: "Thóc", su: "Su" };
     const SLOTS = [
       { id: "sang", label: "Sáng" },
-      { id: "chieu", label: "Chiều" }
+      { id: "chieu", label: "Chiều" },
+      { id: "toi", label: "Tối" }
     ];
     const DAYS = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
+    const WEEKDAYS = ["t2", "t3", "t4", "t5", "t6", "t7", "cn"];
+    const emptyMembers = () => ({ thoc: {}, su: {} });
     const state = {
       person: "chung",
       weekStart: startOfWeek(new Date()),
-      data: { chung: {}, "tue-lam": {}, "tri-lam": {} },
+      data: emptyMembers(),
       dirty: false
     };
 
@@ -236,16 +244,28 @@
     function isToday(d) {
       return iso(d) === iso(new Date());
     }
-    function keyCell(person, dateIso, slot) {
-      return person + "|" + dateIso + "|" + slot;
+    function weekdayKey(d) {
+      return WEEKDAYS[(d.getDay() + 6) % 7];
     }
-    function getCell(person, dateIso, slot) {
+    function memberValue(person, dayKey, slot) {
       const bag = state.data[person] || {};
-      return bag[dateIso + "|" + slot] || "";
+      return bag[dayKey + "|" + slot] || "";
     }
-    function setCell(person, dateIso, slot, value) {
+    function getCell(person, dayKey, slot) {
+      if (person === "chung") {
+        const lines = [];
+        MEMBER_IDS.forEach((id) => {
+          const v = memberValue(id, dayKey, slot);
+          if (v) lines.push(LABELS[id] + ": " + v);
+        });
+        return lines.join("\n");
+      }
+      return memberValue(person, dayKey, slot);
+    }
+    function setCell(person, dayKey, slot, value) {
+      if (person === "chung" || MEMBER_IDS.indexOf(person) < 0) return;
       if (!state.data[person]) state.data[person] = {};
-      const k = dateIso + "|" + slot;
+      const k = dayKey + "|" + slot;
       if (!value) delete state.data[person][k];
       else state.data[person][k] = value;
     }
@@ -263,7 +283,7 @@
         if (!res.ok) throw new Error(String(res.status));
         const parsed = await res.json();
         if (parsed.data) {
-          state.data = Object.assign({ chung: {}, "tue-lam": {}, "tri-lam": {} }, parsed.data);
+          state.data = Object.assign(emptyMembers(), parsed.data);
         }
         state.dirty = false;
         $("status").textContent = "Đang xem bản đã đưa lên GitHub.";
@@ -281,10 +301,25 @@
       toast("Đã tải data.json — ghi đè file trong thư mục project rồi git push.");
     }
 
+    function bindCell(ta, d, slot) {
+      const dayKey = weekdayKey(d);
+      ta.className = "cell" + (isToday(d) ? " today" : "");
+      ta.placeholder = "—";
+      ta.value = getCell(state.person, dayKey, slot.id);
+      ta.dataset.day = dayKey;
+      ta.dataset.slot = slot.id;
+      if (state.person === "chung") {
+        ta.readOnly = true;
+      } else {
+        ta.readOnly = false;
+        ta.addEventListener("input", onEdit);
+      }
+    }
+
     function render() {
       const dates = weekDates(state.weekStart);
       $("week-label").textContent =
-        "Tuần " + fmtVN(dates[0]) + " – " + fmtVN(dates[6]);
+        "Lặp mỗi tuần · " + fmtVN(dates[0]) + " – " + fmtVN(dates[6]);
 
       document.querySelectorAll(".tab").forEach((t) => {
         t.setAttribute("aria-selected", t.dataset.person === state.person ? "true" : "false");
@@ -310,13 +345,8 @@
         grid.appendChild(lab);
         dates.forEach((d) => {
           const ta = document.createElement("textarea");
-          ta.className = "cell" + (isToday(d) ? " today" : "");
           ta.rows = 3;
-          ta.placeholder = "—";
-          ta.value = getCell(state.person, iso(d), slot.id);
-          ta.dataset.date = iso(d);
-          ta.dataset.slot = slot.id;
-          ta.addEventListener("input", onEdit);
+          bindCell(ta, d, slot);
           grid.appendChild(ta);
         });
       });
@@ -339,13 +369,8 @@
           sl.textContent = slot.label;
           card.appendChild(sl);
           const ta = document.createElement("textarea");
-          ta.className = "cell";
           ta.rows = 2;
-          ta.placeholder = "—";
-          ta.value = getCell(state.person, iso(d), slot.id);
-          ta.dataset.date = iso(d);
-          ta.dataset.slot = slot.id;
-          ta.addEventListener("input", onEdit);
+          bindCell(ta, d, slot);
           card.appendChild(ta);
         });
         mobile.appendChild(card);
@@ -355,9 +380,9 @@
     let saveTimer;
     function onEdit(ev) {
       const ta = ev.target;
-      setCell(state.person, ta.dataset.date, ta.dataset.slot, ta.value.trim() ? ta.value : "");
+      setCell(state.person, ta.dataset.day, ta.dataset.slot, ta.value.trim() ? ta.value : "");
       document.querySelectorAll(
-        'textarea[data-date="' + ta.dataset.date + '"][data-slot="' + ta.dataset.slot + '"]'
+        'textarea[data-day="' + ta.dataset.day + '"][data-slot="' + ta.dataset.slot + '"]'
       ).forEach((other) => {
         if (other !== ta) other.value = ta.value;
       });
