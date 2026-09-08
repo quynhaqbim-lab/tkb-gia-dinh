@@ -36,7 +36,13 @@
     .pill { font: inherit; cursor: pointer; border: 1px solid var(--line); background: #fff; padding: 8px 16px; border-radius: 999px; font-weight: 650; display: inline-flex; align-items: center; gap: 8px; }
     .pill .dot { width: 9px; height: 9px; border-radius: 50%; }
     .pill.on { background: var(--green); color: #fff; border-color: var(--green); }
-    .board { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: auto; }
+    .board {
+      background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
+      overflow-x: auto; overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+    .board::-webkit-scrollbar { height: 10px; }
+    .board::-webkit-scrollbar-thumb { background: #c5d0d8; border-radius: 99px; }
     table.grid { border-collapse: separate; border-spacing: 0; min-width: 980px; width: 100%; }
     .grid th, .grid td { vertical-align: top; }
     .grid thead th { padding: 14px 10px 12px; font-weight: 650; border-bottom: 1px solid var(--line); background: #fafbfc; }
@@ -44,7 +50,12 @@
     .grid thead th.today { background: var(--green-soft); color: var(--green); }
     .grid thead th.weekend { background: var(--weekend); color: var(--weekend-ink); }
     .now { display: inline-block; margin-left: 6px; font-size: 0.62rem; background: var(--green); color: #fff; border-radius: 999px; padding: 2px 7px; }
-    .lab { width: 54px; color: #fff; font-weight: 700; font-size: 0.88rem; text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 0.08em; }
+    .lab {
+      width: 54px; color: #fff; font-weight: 700; font-size: 0.88rem;
+      text-align: center; writing-mode: vertical-rl; transform: rotate(180deg);
+      letter-spacing: 0.08em; position: sticky; left: 0; z-index: 2;
+    }
+    .grid thead th:first-child { position: sticky; left: 0; z-index: 3; background: #fafbfc; }
     td.lab-sang { background: var(--sang); }
     td.lab-chieu { background: var(--chieu); }
     td.cell { border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px; min-width: 132px; }
@@ -55,25 +66,12 @@
     .chip .who { font-weight: 700; font-size: 0.72rem; margin-bottom: 2px; }
     .chip .tm { color: var(--muted); font-size: 0.75rem; }
     .empty { color: var(--muted); font-size: 0.8rem; }
-    .days { display: none; }
-    .day-card { background: #fff; border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
-    .day-h { padding: 12px 14px; display: flex; justify-content: space-between; font-weight: 700; }
-    .day-h .sub { color: var(--muted); font-weight: 500; font-size: 0.82rem; }
-    .day-card.today { box-shadow: 0 0 0 2px var(--green), var(--shadow); }
-    .day-card.today .day-h { background: var(--green-soft); color: var(--green); }
-    .day-card.weekend .day-h { background: var(--weekend); color: var(--weekend-ink); }
-    .slot-h { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; padding: 6px 14px; }
-    .slot-h.sang { background: var(--sang); }
-    .slot-h.chieu { background: var(--chieu); }
-    .slot-b { padding: 10px 12px 12px; }
     .foot { margin-top: 16px; color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
     .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
     .ghost { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-weight: 650; cursor: pointer; font: inherit; }
     @media (max-width: 860px) {
       body { padding: 16px 12px 40px; }
       .top { flex-direction: column; align-items: flex-start; }
-      .board { display: none; }
-      .days { display: grid; gap: 12px; }
     }
     @media print {
       body { background: #fff; padding: 0; }
@@ -91,7 +89,6 @@
     <p class="hint">Chỉ xem. Đổi lịch thì sửa <code>data.json</code> rồi push GitHub, sau đó bấm <strong>Làm mới</strong> (tránh cache trình duyệt).</p>
     <div class="pills" id="pills"></div>
     <div class="board"><table class="grid" id="grid"></table></div>
-    <div class="days" id="days"></div>
     <div class="actions">
       <button class="ghost" type="button" id="btn-reload">Làm mới</button>
       <button class="ghost" type="button" id="btn-today">Về tuần này</button>
@@ -220,38 +217,12 @@
       table.appendChild(tb);
     }
 
-    function renderDays() {
-      const box = document.getElementById("days");
-      box.innerHTML = "";
-      weekDates().forEach((d, i) => {
-        const card = document.createElement("article");
-        card.className = "day-card" + (isToday(d) ? " today" : "") + (isWeekend(i) ? " weekend" : "");
-        const h = document.createElement("div");
-        h.className = "day-h";
-        h.innerHTML = "<span>" + DAYS[i] + (isToday(d) ? ' <span class="now">HÔM NAY</span>' : "") +
-          '</span><span class="sub">' + fmtVN(d) + "</span>";
-        card.appendChild(h);
-        SLOTS.forEach((slot) => {
-          const sh = document.createElement("div");
-          sh.className = "slot-h " + slot.id;
-          sh.textContent = slot.label;
-          const sb = document.createElement("div");
-          sb.className = "slot-b";
-          fillSlot(sb, KEYS[i], slot.id);
-          card.appendChild(sh);
-          card.appendChild(sb);
-        });
-        box.appendChild(card);
-      });
-    }
-
     function render() {
       const now = new Date();
       document.getElementById("today-line").innerHTML =
         "<strong>Hôm nay:</strong> " + DAYS[(now.getDay() + 6) % 7] + ", " + fmtVN(now);
       renderPills();
       renderGrid();
-      renderDays();
     }
 
     async function load() {
@@ -283,8 +254,6 @@
     document.getElementById("btn-today").addEventListener("click", () => {
       state.weekStart = startOfWeek(new Date());
       render();
-      const el = document.querySelector(".day-card.today");
-      if (el && matchMedia("(max-width: 860px)").matches) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     document.getElementById("btn-share").addEventListener("click", async () => {
       const url = location.origin + location.pathname.replace(/index\.html$/, "");
