@@ -66,7 +66,7 @@
       ],
       "t3": [
         { "start": "13:30", "end": "17:40", "title": "Ở trường", "place": "su-truong" },
-        { "start": "18:00", "end": "21:00", "title": "Tiếng Anh" }
+        { "start": "18:00", "end": "21:00", "title": "Tiếng Anh", "place": "su-van" }
       ],
       "t4": [
         { "start": "13:30", "end": "17:40", "title": "Ở trường", "place": "su-truong" },
