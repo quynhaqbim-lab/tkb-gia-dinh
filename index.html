@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#f4efe4" />
   <title>Thời Khóa Biểu Gia Đình</title>
-  <meta name="description" content="Lịch tuần gia đình — Lịch chung, Tuệ Lâm, Trí Lâm. Lưu trên máy và chia sẻ bằng link GitHub Pages." />
+  <meta name="description" content="Lịch tuần gia đình — Lịch chung, Tuệ Lâm, Trí Lâm. Bản trên GitHub Pages, cập nhật bằng data.json rồi deploy lại." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%231c3d32' width='64' height='64' rx='12'/%3E%3Cpath fill='%23f4efe4' d='M16 18h32v6H16zm0 12h32v4H16zm0 10h20v4H16z'/%3E%3C/svg%3E" />
   <style>
     :root {
@@ -163,10 +163,11 @@
     <header class="top">
       <div>
         <h1>Thời Khóa Biểu Gia Đình</h1>
-        <p class="lede">Điền lịch tuần, lưu tự động trên máy này. Bấm «Sao chép link» để gửi cho cả nhà — người mở link GitHub sẽ thấy đúng bản bạn đang xem.</p>
+        <p class="lede">Cả nhà mở cùng một link GitHub. Đổi lịch thì sửa <code>data.json</code> rồi đẩy lại repo — không cần server đồng bộ.</p>
       </div>
       <div class="actions">
-        <button class="btn" type="button" id="btn-share">Sao chép link</button>
+        <button class="btn" type="button" id="btn-share">Sao chép link trang</button>
+        <button class="btn ghost" type="button" id="btn-export">Tải data.json</button>
         <button class="btn ghost" type="button" id="btn-today">Về tuần này</button>
         <button class="btn ghost" type="button" id="btn-print">In</button>
       </div>
@@ -186,10 +187,10 @@
 
     <div class="grid" id="grid" aria-live="polite"></div>
     <div class="mobile" id="mobile"></div>
-    <p class="status" id="status">Chưa có thay đổi.</p>
+    <p class="status" id="status">Đang tải bản GitHub…</p>
     <footer class="note">
-      Host trên GitHub Pages (không có máy chủ lưu chung). Link có chứa dữ liệu lịch — ai có link đều xem được.
-      Xóa cache trình duyệt sẽ mất bản chỉ lưu local; bản trong link vẫn mở được nếu bạn giữ URL.
+      Bản mọi người nhìn thấy là file <code>data.json</code> đã đẩy lên GitHub.
+      Gõ trên trang này chỉ là nháp máy bạn — bấm <strong>Tải data.json</strong>, ghi đè file trong thư mục project, rồi <code>git push</code>.
     </footer>
   </div>
   <div class="toast" id="toast" role="status"></div>
@@ -200,12 +201,11 @@
       { id: "chieu", label: "Chiều" }
     ];
     const DAYS = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
-    const STORE = "tkb-gia-dinh-v1";
-
     const state = {
       person: "chung",
       weekStart: startOfWeek(new Date()),
-      data: { chung: {}, "tue-lam": {}, "tri-lam": {} }
+      data: { chung: {}, "tue-lam": {}, "tri-lam": {} },
+      dirty: false
     };
 
     const $ = (id) => document.getElementById(id);
@@ -250,52 +250,35 @@
       else state.data[person][k] = value;
     }
 
-    function encodeState() {
-      const payload = {
-        v: 1,
-        person: state.person,
-        week: iso(state.weekStart),
-        data: state.data
-      };
-      const json = JSON.stringify(payload);
-      const b64 = btoa(unescape(encodeURIComponent(json)))
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "");
-      return b64;
+    function payload() {
+      return { v: 1, data: state.data };
     }
-    function decodeState(raw) {
-      const pad = raw + "=".repeat((4 - (raw.length % 4)) % 4);
-      const json = decodeURIComponent(escape(atob(pad.replace(/-/g, "+").replace(/_/g, "/"))));
-      return JSON.parse(json);
+    function markDirty() {
+      state.dirty = true;
+      $("status").textContent = "Nháp trên máy này — chưa lên GitHub. Tải data.json rồi git push.";
     }
-
-    function persist() {
-      const encoded = encodeState();
-      try { localStorage.setItem(STORE, encoded); } catch (e) {}
-      const url = new URL(location.href);
-      url.hash = "d=" + encoded;
-      history.replaceState(null, "", url);
-      $("status").textContent = "Đã lưu lúc " + new Date().toLocaleTimeString("vi-VN") + ".";
-    }
-
-    function load() {
-      const hash = (location.hash || "").replace(/^#/, "");
-      const params = new URLSearchParams(hash.includes("=") ? hash : "d=" + hash);
-      const fromHash = params.get("d");
-      let raw = fromHash;
-      if (!raw) {
-        try { raw = localStorage.getItem(STORE); } catch (e) { raw = null; }
-      }
-      if (!raw) return;
+    async function loadPublished() {
       try {
-        const parsed = decodeState(raw);
-        if (parsed.data) state.data = Object.assign({ chung: {}, "tue-lam": {}, "tri-lam": {} }, parsed.data);
-        if (parsed.person && PEOPLE.includes(parsed.person)) state.person = parsed.person;
-        if (parsed.week) state.weekStart = startOfWeek(new Date(parsed.week + "T00:00:00"));
+        const res = await fetch("data.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(String(res.status));
+        const parsed = await res.json();
+        if (parsed.data) {
+          state.data = Object.assign({ chung: {}, "tue-lam": {}, "tri-lam": {} }, parsed.data);
+        }
+        state.dirty = false;
+        $("status").textContent = "Đang xem bản đã đưa lên GitHub.";
       } catch (e) {
-        console.warn("Không đọc được lịch đã lưu", e);
+        $("status").textContent = "Chưa tải được data.json — lịch đang trống.";
       }
+    }
+    function downloadJson() {
+      const blob = new Blob([JSON.stringify(payload(), null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "data.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast("Đã tải data.json — ghi đè file trong thư mục project rồi git push.");
     }
 
     function render() {
@@ -379,7 +362,7 @@
         if (other !== ta) other.value = ta.value;
       });
       clearTimeout(saveTimer);
-      saveTimer = setTimeout(persist, 250);
+      saveTimer = setTimeout(markDirty, 200);
     }
 
     function toast(msg) {
@@ -393,39 +376,33 @@
       t.addEventListener("click", () => {
         state.person = t.dataset.person;
         render();
-        persist();
       });
     });
     $("prev").addEventListener("click", () => {
       state.weekStart.setDate(state.weekStart.getDate() - 7);
       render();
-      persist();
     });
     $("next").addEventListener("click", () => {
       state.weekStart.setDate(state.weekStart.getDate() + 7);
       render();
-      persist();
     });
     $("btn-today").addEventListener("click", () => {
       state.weekStart = startOfWeek(new Date());
       render();
-      persist();
     });
     $("btn-print").addEventListener("click", () => window.print());
+    $("btn-export").addEventListener("click", downloadJson);
     $("btn-share").addEventListener("click", async () => {
-      persist();
-      const url = location.href;
+      const url = location.origin + location.pathname.replace(/index\.html$/, "");
       try {
         await navigator.clipboard.writeText(url);
-        toast("Đã copy link. Gửi link này cho cả nhà.");
+        toast("Đã copy link trang. Cả nhà mở link này.");
       } catch (e) {
         prompt("Copy link:", url);
       }
     });
 
-    load();
-    render();
-    persist();
+    loadPublished().then(render);
   </script>
 </body>
 </html>

@@ -1,19 +1,39 @@
 # Thời Khóa Biểu Gia Đình
 
-Lịch tuần tĩnh (Lịch chung / Tuệ Lâm / Trí Lâm), chạy trên **GitHub Pages** — không cần máy chủ.
+Lịch tuần (Lịch chung / Tuệ Lâm / Trí Lâm) trên **GitHub Pages**. Cả nhà mở **một link**; khi đổi lịch thì sửa dữ liệu rồi đẩy lại GitHub.
 
-**Link mở:** https://quynhaqbim-lab.github.io/tkb-gia-dinh/
+**Link:** https://quynhaqbim-lab.github.io/tkb-gia-dinh/
 
-## Dùng thế nào
+**Thư mục máy này:** `D:\02.WIP\2025\NEW API 2025\12.Lich Gia Dinh`
 
-1. Mở link trên.
-2. Điền Sáng / Chiều theo tuần. Lưu tự động trên trình duyệt máy đó.
-3. Bấm **Sao chép link** rồi gửi Zalo/tin nhắn. Người mở link sẽ thấy đúng bản lịch nằm trong URL.
+## Cách cập nhật lịch
 
-GitHub Pages không đồng bộ realtime. Ai sửa trên máy mình thì phải gửi lại link mới nếu muốn người khác thấy thay đổi.
+Nguồn đúng là file `data.json` trong repo. Pages không tự ghi khi gõ trên web.
 
-Repo **public**: ai có link (kể cả đoạn `#d=...`) đều đọc được lịch. Đừng ghi thông tin nhạy cảm.
+1. Sửa `data.json` (hoặc điền trên trang rồi bấm **Tải data.json** và ghi đè file này).
+2. Trong thư mục project:
 
-## Cập nhật giao diện
+```text
+git add data.json
+git commit -m "Cap nhat lich tuan"
+git push
+```
 
-Sửa `index.html`, commit lên `main`. Pages phục vụ thư mục gốc, không build.
+3. Đợi ~1 phút, mở lại link (refresh mạnh nếu còn bản cũ).
+
+Khóa ô: `"YYYY-MM-DD|sang"` hoặc `"YYYY-MM-DD|chieu"`. Ví dụ:
+
+```json
+{
+  "v": 1,
+  "data": {
+    "chung": {
+      "2026-09-08|sang": "Họp gia đình"
+    },
+    "tue-lam": {},
+    "tri-lam": {}
+  }
+}
+```
+
+Repo **public** — đừng ghi thông tin nhạy cảm.
