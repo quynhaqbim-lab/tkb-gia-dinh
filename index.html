@@ -192,7 +192,9 @@
         place: ev.place,
         query: ev.query,
         maps: ev.maps,
-        placeLabel: ev.placeLabel
+        placeLabel: ev.placeLabel,
+        lat: ev.lat,
+        lng: ev.lng
       };
     }
     function isUnc(pid, day, idx) {
@@ -208,9 +210,19 @@
       const ref = ev.place;
       let query = ev.query || ev.maps;
       let label = ev.placeLabel;
+      let lat = ev.lat;
+      let lng = ev.lng;
       if (ref && places[ref]) {
         query = query || places[ref].query || places[ref].maps;
         label = label || places[ref].label;
+        if (lat == null) lat = places[ref].lat;
+        if (lng == null) lng = places[ref].lng;
+      }
+      if (lat != null && lng != null && lat !== "" && lng !== "") {
+        return {
+          href: "https://www.google.com/maps?q=" + encodeURIComponent(lat + "," + lng),
+          label: label || "Bản đồ"
+        };
       }
       if (!query) return null;
       const href = /^https?:\/\//i.test(query)
