@@ -18,6 +18,7 @@
       --weekend-ink: #c2414a;
       --sang: #9a541c;
       --chieu: #1a6b7c;
+      --toi: #2b3a67;
       --shadow: 0 8px 28px rgba(21, 32, 43, 0.06);
       --radius: 22px;
       --ui: "Segoe UI", "Be Vietnam Pro", system-ui, sans-serif;
@@ -47,6 +48,7 @@
     .board::-webkit-scrollbar-thumb { background: #c5d0d8; border-radius: 99px; }
     table.grid { border-collapse: separate; border-spacing: 0; min-width: 980px; width: 100%; }
     .grid th, .grid td { vertical-align: top; }
+    .grid td.lab { vertical-align: middle; }
     .grid thead th { padding: 14px 10px 12px; font-weight: 650; border-bottom: 1px solid var(--line); background: #fafbfc; }
     .grid thead th .sub { display: block; color: var(--muted); font-size: 0.75rem; font-weight: 500; margin-top: 2px; }
     .grid thead th.today { background: var(--green-soft); color: var(--green); }
@@ -55,18 +57,21 @@
     .now { display: inline-block; margin-left: 6px; font-size: 0.62rem; background: var(--green); color: #fff; border-radius: 999px; padding: 2px 7px; }
     .lab {
       width: 54px; color: #fff; font-weight: 700; font-size: 0.88rem;
-      text-align: center; letter-spacing: 0.08em;
+      letter-spacing: 0.08em;
       position: sticky; left: 0; z-index: 2;
+      vertical-align: middle;
     }
     .lab span {
-      writing-mode: vertical-rl; transform: rotate(180deg); display: inline-block;
+      writing-mode: vertical-rl; transform: rotate(180deg);
+      display: block; margin: 0 auto; line-height: 1.2;
     }
     .grid thead th:first-child { position: sticky; left: 0; z-index: 3; background: #fafbfc; }
     td.lab-sang { background: var(--sang); }
     td.lab-chieu { background: var(--chieu); }
+    td.lab-toi { background: var(--toi); }
     td.cell { border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px; min-width: 132px; }
-    tr.sang td.cell.today, tr.chieu td.cell.today { background: #f3faf6; }
-    tr.sang td.cell.weekend, tr.chieu td.cell.weekend { background: #fff7f7; }
+    tr.sang td.cell.today, tr.chieu td.cell.today, tr.toi td.cell.today { background: #f3faf6; }
+    tr.sang td.cell.weekend, tr.chieu td.cell.weekend, tr.toi td.cell.weekend { background: #fff7f7; }
     .chip { border-radius: 12px; padding: 8px 10px; margin-bottom: 8px; border: 1px solid var(--line); background: #fff; font-size: 0.84rem; }
     .chip.uncertain { background: #ffe566; border-color: #e6c200; }
     .chip .who { font-weight: 700; font-size: 0.72rem; margin-bottom: 2px; }
@@ -99,10 +104,14 @@
       <button class="ghost" type="button" id="btn-reload">Làm mới</button>
       <button class="ghost" type="button" id="btn-share">Sao chép link</button>
     </div>
-    <p class="foot">Ô vàng = chữ giấy chưa xác nhận.</p>
+    <p class="foot">Sáng trước 12h · Chiều 12h–18h · Tối từ 18h. Ô vàng = chữ giấy chưa xác nhận.</p>
   </div>
   <script>
-    const SLOTS = [{ id: "sang", label: "Sáng" }, { id: "chieu", label: "Chiều" }];
+    const SLOTS = [
+      { id: "sang", label: "Sáng" },
+      { id: "chieu", label: "Chiều" },
+      { id: "toi", label: "Tối" }
+    ];
     const DAYS = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
     const KEYS = ["t2", "t3", "t4", "t5", "t6", "t7", "cn"];
     const state = {

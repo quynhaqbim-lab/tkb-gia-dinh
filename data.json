@@ -1,5 +1,5 @@
 {
-  "v": 3,
+  "v": 4,
   "people": [
     { "id": "thoc", "name": "Thóc", "color": "#1f5c45" },
     { "id": "su", "name": "Su", "color": "#d97706" }
@@ -8,18 +8,18 @@
     "thoc": {
       "t2": {
         "sang": [{ "start": "07:45", "end": "17:10", "title": "Ở trường" }],
-        "chieu": [{ "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }]
+        "toi": [{ "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }]
       },
       "t3": {
         "sang": [{ "start": "07:45", "end": "17:10", "title": "Ở trường" }]
       },
       "t4": {
         "sang": [{ "start": "07:45", "end": "17:10", "title": "Ở trường" }],
-        "chieu": [{ "start": "19:30", "end": "20:30", "title": "Đàn" }]
+        "toi": [{ "start": "19:30", "end": "20:30", "title": "Đàn" }]
       },
       "t5": {
         "sang": [{ "start": "07:40", "end": "17:10", "title": "Ở trường" }],
-        "chieu": [{ "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }]
+        "toi": [{ "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }]
       },
       "t6": {
         "sang": [{ "start": "07:40", "end": "17:10", "title": "Ở trường" }]
@@ -33,35 +33,27 @@
     },
     "su": {
       "t2": {
-        "chieu": [
-          { "start": "13:30", "end": "17:40", "title": "Ở trường" },
-          { "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }
-        ]
+        "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }],
+        "toi": [{ "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }]
       },
       "t3": {
-        "chieu": [
-          { "start": "13:30", "end": "17:40", "title": "Ở trường" },
-          { "start": "18:00", "end": "21:00", "title": "Tiếng Anh" }
-        ]
+        "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }],
+        "toi": [{ "start": "18:00", "end": "21:00", "title": "Tiếng Anh" }]
       },
       "t4": {
-        "chieu": [
-          { "start": "13:30", "end": "17:40", "title": "Ở trường" },
-          { "start": "19:30", "end": "20:30", "title": "Đàn" }
-        ]
+        "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }],
+        "toi": [{ "start": "19:30", "end": "20:30", "title": "Đàn" }]
       },
       "t5": {
         "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }]
       },
       "t6": {
-        "chieu": [
-          { "start": "13:30", "end": "17:40", "title": "Ở trường" },
-          { "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }
-        ]
+        "chieu": [{ "start": "13:30", "end": "17:40", "title": "Ở trường" }],
+        "toi": [{ "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }]
       },
       "t7": {
         "sang": [{ "start": "07:15", "end": "11:45", "title": "Ở trường" }],
-        "chieu": [{ "start": "18:00", "end": "21:00", "title": "Văn" }]
+        "toi": [{ "start": "18:00", "end": "21:00", "title": "Văn" }]
       },
       "cn": {
         "sang": [{ "start": "08:00", "end": "11:00", "title": "Toán (ĐHQG)" }],
