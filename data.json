@@ -25,10 +25,15 @@
       "t6|chieu": "13h30 → 17h40 → Ở trường",
       "t6|toi": "19h → 21h → Tiếng Trung",
       "t7|sang": "7h15 → 11h45 → Ở trường",
-      "t7|toi": "18h → 21h → Tiếng Anh Văn",
+      "t7|toi": "18h → 21h → Văn",
       "cn|sang": "8h → 11h → Toán → ĐHQG",
       "cn|chieu": "14h → 17h → Toán → Thầy Long",
       "cn|toi": "17h15 → 18h15 → Đàn"
     }
-  }
+  },
+  "uncertain": [
+    "thoc|t2|sang",
+    "thoc|t7|sang",
+    "su|t6|chieu"
+  ]
 }

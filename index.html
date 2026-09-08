@@ -126,6 +126,11 @@
       background: #f7f1e6; cursor: default;
     }
     .cell.today { background: #fffdf6; }
+    .cell.uncertain,
+    .cell.uncertain.today,
+    .cell[readonly].uncertain {
+      background: #ffe566;
+    }
     .status {
       margin-top: 14px; color: var(--muted); font-size: 0.88rem;
     }
@@ -194,6 +199,7 @@
     <footer class="note">
       Bản mọi người nhìn thấy là file <code>data.json</code> đã đẩy lên GitHub.
       Gõ trên trang này chỉ là nháp máy bạn — bấm <strong>Tải data.json</strong>, ghi đè file trong thư mục project, rồi <code>git push</code>.
+      Ô <strong>vàng</strong> = chữ giấy chưa chắc, chờ xác nhận.
     </footer>
   </div>
   <div class="toast" id="toast" role="status"></div>
@@ -213,6 +219,7 @@
       person: "chung",
       weekStart: startOfWeek(new Date()),
       data: emptyMembers(),
+      uncertain: [],
       dirty: false
     };
 
@@ -270,8 +277,15 @@
       else state.data[person][k] = value;
     }
 
+    function isUncertain(person, dayKey, slot) {
+      const k = person + "|" + dayKey + "|" + slot;
+      if (person === "chung") {
+        return MEMBER_IDS.some((id) => state.uncertain.indexOf(id + "|" + dayKey + "|" + slot) >= 0);
+      }
+      return state.uncertain.indexOf(k) >= 0;
+    }
     function payload() {
-      return { v: 1, data: state.data };
+      return { v: 2, data: state.data, uncertain: state.uncertain };
     }
     function markDirty() {
       state.dirty = true;
@@ -285,8 +299,10 @@
         if (parsed.data) {
           state.data = Object.assign(emptyMembers(), parsed.data);
         }
+        state.uncertain = Array.isArray(parsed.uncertain) ? parsed.uncertain : [];
         state.dirty = false;
-        $("status").textContent = "Đang xem bản đã đưa lên GitHub.";
+        $("status").textContent = "Đang xem bản đã đưa lên GitHub." +
+          (state.uncertain.length ? " Ô vàng = chưa xác nhận." : "");
       } catch (e) {
         $("status").textContent = "Chưa tải được data.json — lịch đang trống.";
       }
@@ -303,7 +319,8 @@
 
     function bindCell(ta, d, slot) {
       const dayKey = weekdayKey(d);
-      ta.className = "cell" + (isToday(d) ? " today" : "");
+      ta.className = "cell" + (isToday(d) ? " today" : "") +
+        (isUncertain(state.person, dayKey, slot.id) ? " uncertain" : "");
       ta.placeholder = "—";
       ta.value = getCell(state.person, dayKey, slot.id);
       ta.dataset.day = dayKey;
