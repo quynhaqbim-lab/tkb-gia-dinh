@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe4" />
+  <title>Thời Khóa Biểu Gia Đình</title>
+  <meta name="description" content="Lịch tuần gia đình — Lịch chung, Tuệ Lâm, Trí Lâm. Lưu trên máy và chia sẻ bằng link GitHub Pages." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%231c3d32' width='64' height='64' rx='12'/%3E%3Cpath fill='%23f4efe4' d='M16 18h32v6H16zm0 12h32v4H16zm0 10h20v4H16z'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --paper: #f4efe4;
+      --ink: #1c241f;
+      --muted: #5c675f;
+      --line: #d7cfc0;
+      --pine: #1c3d32;
+      --pine-2: #2a5a48;
+      --clay: #b85c38;
+      --today: #e8d7a8;
+      --card: #fffaf2;
+      --shadow: 0 10px 30px rgba(28, 36, 31, 0.08);
+      --radius: 18px;
+      --font: "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+      --ui: "Segoe UI", "Be Vietnam Pro", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--paper); color: var(--ink); }
+    body {
+      font-family: var(--ui);
+      padding: 20px 16px 48px;
+      background-image:
+        radial-gradient(1200px 400px at 10% -10%, #fff 0%, transparent 55%),
+        radial-gradient(800px 300px at 100% 0%, #ead9c4 0%, transparent 50%);
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; }
+    header.top {
+      display: flex; flex-wrap: wrap; gap: 14px 20px;
+      align-items: flex-end; justify-content: space-between;
+      margin-bottom: 22px;
+    }
+    h1 {
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: clamp(1.6rem, 3vw, 2.15rem);
+      letter-spacing: -0.02em;
+      margin: 0 0 4px;
+    }
+    .lede { margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 42rem; line-height: 1.45; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    button, .tab {
+      font: inherit; cursor: pointer; border: 0;
+    }
+    .btn {
+      background: var(--pine); color: #f7f3ea;
+      padding: 10px 14px; border-radius: 999px;
+      font-size: 0.9rem; font-weight: 600;
+    }
+    .btn:hover { background: var(--pine-2); }
+    .btn.ghost {
+      background: transparent; color: var(--pine);
+      border: 1px solid var(--line);
+    }
+    .btn.ghost:hover { background: #efe8d8; }
+    .tabs {
+      display: flex; gap: 6px; padding: 5px;
+      background: #efe8d8; border-radius: 999px;
+      width: fit-content; margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      background: transparent; color: var(--muted);
+      padding: 8px 16px; border-radius: 999px; font-weight: 600;
+    }
+    .tab[aria-selected="true"] {
+      background: var(--card); color: var(--pine); box-shadow: var(--shadow);
+    }
+    .weekbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-bottom: 14px;
+    }
+    .week-label {
+      font-family: var(--font); font-size: 1.15rem; text-align: center; flex: 1;
+    }
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--line);
+      display: grid; place-items: center; color: var(--pine); font-size: 1.1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 72px repeat(7, minmax(0, 1fr));
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+    .head, .slot {
+      font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); font-weight: 700; padding: 6px 4px;
+    }
+    .day {
+      text-align: center; padding: 8px 4px 10px;
+      border-radius: 12px;
+    }
+    .day.today { background: var(--today); }
+    .day .name { display: block; font-weight: 700; font-size: 0.85rem; color: var(--ink); text-transform: none; letter-spacing: 0; }
+    .day .date { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .badge {
+      display: inline-block; margin-top: 4px; font-size: 0.65rem;
+      background: var(--clay); color: #fff; border-radius: 999px; padding: 2px 7px;
+      letter-spacing: 0.04em;
+    }
+    .cell {
+      min-height: 88px; width: 100%;
+      border: 1px dashed #e0d6c4; border-radius: 12px;
+      padding: 8px; resize: vertical;
+      font: 0.92rem/1.4 var(--ui);
+      background: #fff; color: var(--ink);
+    }
+    .cell:focus {
+      outline: 2px solid var(--pine); border-style: solid;
+    }
+    .cell.today { background: #fffdf6; }
+    .status {
+      margin-top: 14px; color: var(--muted); font-size: 0.88rem;
+    }
+    .toast {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      background: var(--pine); color: #fff; padding: 10px 16px; border-radius: 999px;
+      font-size: 0.88rem; opacity: 0; pointer-events: none; transition: opacity .2s;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; }
+    footer.note {
+      margin-top: 28px; color: var(--muted); font-size: 0.82rem; line-height: 1.5;
+    }
+    @media (max-width: 860px) {
+      .grid { display: none; }
+      .mobile { display: grid; gap: 10px; }
+      .m-day {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: 16px; padding: 12px; box-shadow: var(--shadow);
+      }
+      .m-day.today { outline: 2px solid var(--today); }
+      .m-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+      .m-title { font-weight: 700; }
+      .m-slot { font-size: 0.75rem; font-weight: 700; color: var(--muted); margin: 8px 0 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+    }
+    @media (min-width: 861px) {
+      .mobile { display: none; }
+    }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .actions, .icon-btn, footer.note, .toast { display: none !important; }
+      .grid { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>Thời Khóa Biểu Gia Đình</h1>
+        <p class="lede">Điền lịch tuần, lưu tự động trên máy này. Bấm «Sao chép link» để gửi cho cả nhà — người mở link GitHub sẽ thấy đúng bản bạn đang xem.</p>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" id="btn-share">Sao chép link</button>
+        <button class="btn ghost" type="button" id="btn-today">Về tuần này</button>
+        <button class="btn ghost" type="button" id="btn-print">In</button>
+      </div>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Thành viên">
+      <button class="tab" role="tab" id="tab-chung" data-person="chung" aria-selected="true">Lịch chung</button>
+      <button class="tab" role="tab" id="tab-tue" data-person="tue-lam" aria-selected="false">Tuệ Lâm</button>
+      <button class="tab" role="tab" id="tab-tri" data-person="tri-lam" aria-selected="false">Trí Lâm</button>
+    </div>
+
+    <div class="weekbar">
+      <button class="icon-btn" type="button" id="prev" aria-label="Tuần trước">‹</button>
+      <div class="week-label" id="week-label"></div>
+      <button class="icon-btn" type="button" id="next" aria-label="Tuần sau">›</button>
+    </div>
+
+    <div class="grid" id="grid" aria-live="polite"></div>
+    <div class="mobile" id="mobile"></div>
+    <p class="status" id="status">Chưa có thay đổi.</p>
+    <footer class="note">
+      Host trên GitHub Pages (không có máy chủ lưu chung). Link có chứa dữ liệu lịch — ai có link đều xem được.
+      Xóa cache trình duyệt sẽ mất bản chỉ lưu local; bản trong link vẫn mở được nếu bạn giữ URL.
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    const PEOPLE = ["chung", "tue-lam", "tri-lam"];
+    const SLOTS = [
+      { id: "sang", label: "Sáng" },
+      { id: "chieu", label: "Chiều" }
+    ];
+    const DAYS = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
+    const STORE = "tkb-gia-dinh-v1";
+
+    const state = {
+      person: "chung",
+      weekStart: startOfWeek(new Date()),
+      data: { chung: {}, "tue-lam": {}, "tri-lam": {} }
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function startOfWeek(d) {
+      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const day = (x.getDay() + 6) % 7;
+      x.setDate(x.getDate() - day);
+      x.setHours(0, 0, 0, 0);
+      return x;
+    }
+    function iso(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+    function fmtVN(d) {
+      return d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+    }
+    function weekDates(start) {
+      return Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        return d;
+      });
+    }
+    function isToday(d) {
+      return iso(d) === iso(new Date());
+    }
+    function keyCell(person, dateIso, slot) {
+      return person + "|" + dateIso + "|" + slot;
+    }
+    function getCell(person, dateIso, slot) {
+      const bag = state.data[person] || {};
+      return bag[dateIso + "|" + slot] || "";
+    }
+    function setCell(person, dateIso, slot, value) {
+      if (!state.data[person]) state.data[person] = {};
+      const k = dateIso + "|" + slot;
+      if (!value) delete state.data[person][k];
+      else state.data[person][k] = value;
+    }
+
+    function encodeState() {
+      const payload = {
+        v: 1,
+        person: state.person,
+        week: iso(state.weekStart),
+        data: state.data
+      };
+      const json = JSON.stringify(payload);
+      const b64 = btoa(unescape(encodeURIComponent(json)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+      return b64;
+    }
+    function decodeState(raw) {
+      const pad = raw + "=".repeat((4 - (raw.length % 4)) % 4);
+      const json = decodeURIComponent(escape(atob(pad.replace(/-/g, "+").replace(/_/g, "/"))));
+      return JSON.parse(json);
+    }
+
+    function persist() {
+      const encoded = encodeState();
+      try { localStorage.setItem(STORE, encoded); } catch (e) {}
+      const url = new URL(location.href);
+      url.hash = "d=" + encoded;
+      history.replaceState(null, "", url);
+      $("status").textContent = "Đã lưu lúc " + new Date().toLocaleTimeString("vi-VN") + ".";
+    }
+
+    function load() {
+      const hash = (location.hash || "").replace(/^#/, "");
+      const params = new URLSearchParams(hash.includes("=") ? hash : "d=" + hash);
+      const fromHash = params.get("d");
+      let raw = fromHash;
+      if (!raw) {
+        try { raw = localStorage.getItem(STORE); } catch (e) { raw = null; }
+      }
+      if (!raw) return;
+      try {
+        const parsed = decodeState(raw);
+        if (parsed.data) state.data = Object.assign({ chung: {}, "tue-lam": {}, "tri-lam": {} }, parsed.data);
+        if (parsed.person && PEOPLE.includes(parsed.person)) state.person = parsed.person;
+        if (parsed.week) state.weekStart = startOfWeek(new Date(parsed.week + "T00:00:00"));
+      } catch (e) {
+        console.warn("Không đọc được lịch đã lưu", e);
+      }
+    }
+
+    function render() {
+      const dates = weekDates(state.weekStart);
+      $("week-label").textContent =
+        "Tuần " + fmtVN(dates[0]) + " – " + fmtVN(dates[6]);
+
+      document.querySelectorAll(".tab").forEach((t) => {
+        t.setAttribute("aria-selected", t.dataset.person === state.person ? "true" : "false");
+      });
+
+      const grid = $("grid");
+      grid.innerHTML = "";
+      const corner = document.createElement("div");
+      grid.appendChild(corner);
+      dates.forEach((d) => {
+        const el = document.createElement("div");
+        el.className = "day" + (isToday(d) ? " today" : "");
+        el.innerHTML =
+          '<span class="name">' + DAYS[(d.getDay() + 6) % 7] + "</span>" +
+          '<span class="date">' + fmtVN(d) + "</span>" +
+          (isToday(d) ? '<span class="badge">Hôm nay</span>' : "");
+        grid.appendChild(el);
+      });
+      SLOTS.forEach((slot) => {
+        const lab = document.createElement("div");
+        lab.className = "slot";
+        lab.textContent = slot.label;
+        grid.appendChild(lab);
+        dates.forEach((d) => {
+          const ta = document.createElement("textarea");
+          ta.className = "cell" + (isToday(d) ? " today" : "");
+          ta.rows = 3;
+          ta.placeholder = "—";
+          ta.value = getCell(state.person, iso(d), slot.id);
+          ta.dataset.date = iso(d);
+          ta.dataset.slot = slot.id;
+          ta.addEventListener("input", onEdit);
+          grid.appendChild(ta);
+        });
+      });
+
+      const mobile = $("mobile");
+      mobile.innerHTML = "";
+      dates.forEach((d) => {
+        const card = document.createElement("article");
+        card.className = "m-day" + (isToday(d) ? " today" : "");
+        const head = document.createElement("div");
+        head.className = "m-head";
+        head.innerHTML =
+          '<span class="m-title">' + DAYS[(d.getDay() + 6) % 7] +
+          (isToday(d) ? " · Hôm nay" : "") + "</span>" +
+          "<span>" + fmtVN(d) + "</span>";
+        card.appendChild(head);
+        SLOTS.forEach((slot) => {
+          const sl = document.createElement("div");
+          sl.className = "m-slot";
+          sl.textContent = slot.label;
+          card.appendChild(sl);
+          const ta = document.createElement("textarea");
+          ta.className = "cell";
+          ta.rows = 2;
+          ta.placeholder = "—";
+          ta.value = getCell(state.person, iso(d), slot.id);
+          ta.dataset.date = iso(d);
+          ta.dataset.slot = slot.id;
+          ta.addEventListener("input", onEdit);
+          card.appendChild(ta);
+        });
+        mobile.appendChild(card);
+      });
+    }
+
+    let saveTimer;
+    function onEdit(ev) {
+      const ta = ev.target;
+      setCell(state.person, ta.dataset.date, ta.dataset.slot, ta.value.trim() ? ta.value : "");
+      document.querySelectorAll(
+        'textarea[data-date="' + ta.dataset.date + '"][data-slot="' + ta.dataset.slot + '"]'
+      ).forEach((other) => {
+        if (other !== ta) other.value = ta.value;
+      });
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(persist, 250);
+    }
+
+    function toast(msg) {
+      const el = $("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    document.querySelectorAll(".tab").forEach((t) => {
+      t.addEventListener("click", () => {
+        state.person = t.dataset.person;
+        render();
+        persist();
+      });
+    });
+    $("prev").addEventListener("click", () => {
+      state.weekStart.setDate(state.weekStart.getDate() - 7);
+      render();
+      persist();
+    });
+    $("next").addEventListener("click", () => {
+      state.weekStart.setDate(state.weekStart.getDate() + 7);
+      render();
+      persist();
+    });
+    $("btn-today").addEventListener("click", () => {
+      state.weekStart = startOfWeek(new Date());
+      render();
+      persist();
+    });
+    $("btn-print").addEventListener("click", () => window.print());
+    $("btn-share").addEventListener("click", async () => {
+      persist();
+      const url = location.href;
+      try {
+        await navigator.clipboard.writeText(url);
+        toast("Đã copy link. Gửi link này cho cả nhà.");
+      } catch (e) {
+        prompt("Copy link:", url);
+      }
+    });
+
+    load();
+    render();
+    persist();
+  </script>
+</body>
+</html>
