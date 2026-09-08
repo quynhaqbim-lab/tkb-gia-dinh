@@ -1,71 +1,87 @@
 {
   "v": 5,
-  "note": "Mỗi mục là khoảng giờ thật. Giao diện cắt Sáng <12h, Chiều 12–18h, Tối ≥18h.",
+  "note": "Mỗi mục là khoảng giờ thật. Giao diện cắt Sáng <12h, Chiều 12–18h, Tối ≥18h. Pin Maps dùng lat/lng.",
   "people": [
     { "id": "thoc", "name": "Thóc", "color": "#1f5c45" },
     { "id": "su", "name": "Su", "color": "#d97706" }
   ],
   "places": {
+    "su-truong": {
+      "label": "Trường (Su)",
+      "lat": 21.0338274,
+      "lng": 105.7831481
+    },
     "dhqg": {
       "label": "ĐHQG",
-      "query": "Đại học Quốc gia Hà Nội"
+      "lat": 21.0376781,
+      "lng": 105.7823009
+    },
+    "ve-dan": {
+      "label": "Vẽ, đàn",
+      "lat": 21.0458806,
+      "lng": 105.7843169
+    },
+    "thoc-truong": {
+      "label": "Trường (Thóc)",
+      "lat": 21.0581021,
+      "lng": 105.7801323
     }
   },
   "events": {
     "thoc": {
       "t2": [
-        { "start": "07:45", "end": "17:10", "title": "Ở trường" },
+        { "start": "07:45", "end": "17:10", "title": "Ở trường", "place": "thoc-truong" },
         { "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }
       ],
       "t3": [
-        { "start": "07:45", "end": "17:10", "title": "Ở trường" }
+        { "start": "07:45", "end": "17:10", "title": "Ở trường", "place": "thoc-truong" }
       ],
       "t4": [
-        { "start": "07:45", "end": "17:10", "title": "Ở trường" },
-        { "start": "19:30", "end": "20:30", "title": "Đàn" }
+        { "start": "07:45", "end": "17:10", "title": "Ở trường", "place": "thoc-truong" },
+        { "start": "19:30", "end": "20:30", "title": "Đàn", "place": "ve-dan" }
       ],
       "t5": [
-        { "start": "07:40", "end": "17:10", "title": "Ở trường" },
+        { "start": "07:40", "end": "17:10", "title": "Ở trường", "place": "thoc-truong" },
         { "start": "18:00", "end": "19:30", "title": "Tiếng Anh" }
       ],
       "t6": [
-        { "start": "07:40", "end": "17:10", "title": "Ở trường" }
+        { "start": "07:40", "end": "17:10", "title": "Ở trường", "place": "thoc-truong" }
       ],
       "t7": [
         { "start": "08:00", "end": "10:30", "title": "Nhà cô CN" }
       ],
       "cn": [
-        { "start": "15:00", "end": "18:15", "title": "Vẽ + Đàn" }
+        { "start": "15:00", "end": "18:15", "title": "Vẽ + Đàn", "place": "ve-dan" }
       ]
     },
     "su": {
       "t2": [
-        { "start": "13:30", "end": "17:40", "title": "Ở trường" },
+        { "start": "13:30", "end": "17:40", "title": "Ở trường", "place": "su-truong" },
         { "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }
       ],
       "t3": [
-        { "start": "13:30", "end": "17:40", "title": "Ở trường" },
+        { "start": "13:30", "end": "17:40", "title": "Ở trường", "place": "su-truong" },
         { "start": "18:00", "end": "21:00", "title": "Tiếng Anh" }
       ],
       "t4": [
-        { "start": "13:30", "end": "17:40", "title": "Ở trường" },
-        { "start": "19:30", "end": "20:30", "title": "Đàn" }
+        { "start": "13:30", "end": "17:40", "title": "Ở trường", "place": "su-truong" },
+        { "start": "19:30", "end": "20:30", "title": "Đàn", "place": "ve-dan" }
       ],
       "t5": [
-        { "start": "13:30", "end": "17:40", "title": "Ở trường" }
+        { "start": "13:30", "end": "17:40", "title": "Ở trường", "place": "su-truong" }
       ],
       "t6": [
-        { "start": "13:30", "end": "17:40", "title": "Ở trường" },
+        { "start": "13:30", "end": "17:40", "title": "Ở trường", "place": "su-truong" },
         { "start": "19:00", "end": "21:00", "title": "Tiếng Trung" }
       ],
       "t7": [
-        { "start": "07:15", "end": "11:45", "title": "Ở trường" },
+        { "start": "07:15", "end": "11:45", "title": "Ở trường", "place": "su-truong" },
         { "start": "18:00", "end": "21:00", "title": "Văn" }
       ],
       "cn": [
         { "start": "08:00", "end": "11:00", "title": "Toán (ĐHQG)", "place": "dhqg" },
         { "start": "14:00", "end": "17:00", "title": "Toán (Thầy Long)" },
-        { "start": "17:15", "end": "18:15", "title": "Đàn" }
+        { "start": "17:15", "end": "18:15", "title": "Đàn", "place": "ve-dan" }
       ]
     }
   },
